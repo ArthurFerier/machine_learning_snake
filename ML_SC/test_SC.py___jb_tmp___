@@ -1,0 +1,3 @@
+import sc2
+
+help(sc2.run_game(realtime))
