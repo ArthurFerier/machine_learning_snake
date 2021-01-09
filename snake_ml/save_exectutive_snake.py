@@ -71,4 +71,4 @@ plt.title("bests : {}   proportion : {}   amplitude : {}   n_batch : {}"
                 .format(bests, proportion, amplitude, n_batch, structure, size, init_moves, add_moves))
 plt.show()
 
-generations[-1][0].save("meilleur_snake")
+#generations[-1][0].save("meilleur_snake")

@@ -39,7 +39,7 @@ FPS = 60                        # Game frames per second
 SEGMENT_SCORE = 1               # Score per segment
 
 SNAKE_SPEED_INCREMENT = 0.25    # Snake speeds up this much each time it grows
-SNAKE_START_LENGTH = 20          # Initial snake length in segments
+SNAKE_START_LENGTH = 5          # Initial snake length in segments
 
 WORLD_SIZE = Vector((20, 20))   # World size, in blocks
 BLOCK_SIZE = 24                 # Block size, in pixels

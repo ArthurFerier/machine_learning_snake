@@ -17,12 +17,12 @@ amplitude = 3                   # maximum of change in a w/b that can occurs in 
 d_amplitude = 0.1               # decrease of the amplitude for each batch
 init_moves = 200                # number of moves the snake can do, can increase with time?
 add_moves = 100                 # number of moves added when the snake eats food
-screen = False                  # see the screen or not
+screen = True                   # see the screen or not
 bool_speed = False              # tame the speed of the snake or not
 speed = 1000                       # speed in squares/s of the snake
 size = 20                      # size of the world
 loaded = False                  # if we want to evolve a saved snake
-file = "best_of_gen\\best_of_gen11.npz"     # file to load the snake to evolve
+file = "best_of_gen/best_of_gen11.npz"     # file to load the snake to evolve
 text = "24_snake"               # name of the graph
 structure = [16, 16]            # hidden_layers of the brain
 namefile = "first_24_snake"     # name of the file containing the graph of the results
@@ -41,7 +41,6 @@ x = np.arange(n_generations)
 y_scores = np.array([])
 y_median = np.arange(n_generations)
 for i in range(n_generations):
-    #children = np.empty(n_batch, dtype=tuple)
 
     pygame.init()
     children = SnakeGame(parents, scores_p, structure,
@@ -65,7 +64,7 @@ for i in range(n_generations):
     y_median[i] = median_scores
 
     generations[i] = parents
-    ordered_children[0].save("D:\\Cloudstation\\Machine_learning\\snake_ml\\best_of_gen2\\best_of_gen"+str(i))
+    ordered_children[0].save("best_of_gen2/best_of_gen"+str(i))
 
     proportion -= d_proportion
     amplitude -= d_amplitude
@@ -81,6 +80,6 @@ plt.ylabel("best of the generation")
 plt.title("bests : {}   proportion : {}   amplitude : {}   n_batch : {}  "
           "structure : {}   size_screen : {}   move_i : {}   move_add : {} "
           .format(bests, proportion, amplitude, n_batch, structure, size, init_moves, add_moves))
-plt.savefig("D:\\Cloudstation\\Machine_learning\\data_snake_ml\\{}".format(namefile))
+plt.savefig("data_snake_ml/{}".format(namefile))
 plt.show()
 
