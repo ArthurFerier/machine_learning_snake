@@ -31,7 +31,6 @@ class MLNeuralNetwork:
             self.bias_vectors = data["b"]
             self.structure = data["s"]
 
-
     def __str__(self):
         """
         :return: the weights and bias
@@ -140,6 +139,7 @@ class MLNeuralNetwork:
 # useful functions for learning methods
 def sigmoid(x):
     return 1/(1 + np.exp(-x))
+
 
 def d_sigmoid(x):
     return x * (1 - x)

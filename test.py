@@ -1,12 +1,13 @@
 import numpy as np
 from réseaux.Multi_layer_NN import *
 
+"""
 brains = np.array([MLNeuralNetwork([2, 2, 1]), MLNeuralNetwork([2, 3, 1]), MLNeuralNetwork([2, 4, 1]), MLNeuralNetwork([2, 5, 1])])
-sc = scores(brains)
+sc = get_scores(brains)
 print(sc)
 
 
-"""
+
 brains = np.array([MLNeuralNetwork([2, 2, 1]), MLNeuralNetwork([2, 3, 1]), MLNeuralNetwork([2, 4, 1]), MLNeuralNetwork([2, 5, 1])])
 brains[0].score = 7
 brains[1].score = 13
@@ -38,7 +39,7 @@ print(count2)
 print(count3)
 print(count4)
     
-"""
+
 
 """
 oui = np.array(["a", "b", "c", "d"])
@@ -52,17 +53,18 @@ countd = 0
 
 for i in range(1000):
     merde = pooling(oui, non)
-    if merde == "a":
+    if merde[0] == "a":
         counta += 1
         
-    elif merde == "b":
+    elif merde[0] == "b":
         countb += 1
         
-    elif merde == "c":
+    elif merde[0] == "c":
         countc += 1
         
-    elif merde == "d":
+    elif merde[0] == "d":
         countd += 1
+
 
 
 print(counta)
@@ -70,6 +72,3 @@ print(countb)
 print(countc)
 print(countd)
     
-    
-
-"""

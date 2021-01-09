@@ -1,7 +1,7 @@
 import numpy as np
 import time
 
-np.random.seed(2)
+#np.random.seed(2)
 # main class
 class MLNeuralNetwork:
 
@@ -52,8 +52,8 @@ class MLNeuralNetwork:
                     #bias_vector = (np.random.random_sample(structure[i + 1])) * 2 - 1
                     self.weights_matrices.append(weight_matrix)
                     self.bias_vectors.append(bias_vector)
-                self.weights_matrices = np.array(self.weights_matrices)
-                self.bias_vectors = np.array(self.bias_vectors)
+                self.weights_matrices = np.array(self.weights_matrices, dtype="object")
+                self.bias_vectors = np.array(self.bias_vectors, dtype="object")
         else:  # load network
             data = np.load(structure)
             self.weights_matrices = data["w"]
@@ -248,22 +248,24 @@ def choice(array):
 
 # pooling functions
 
-def sorted_brains_scores(array):
+def sorted_brains_scores(brains):
     """
-    :param array: array of type ndarray containing the brains
+    :param brains: array of type ndarray containing the brains
     :return: the array sorted with the biggest brain first
     """
-    scores = get_scores(array)
+    scores = get_scores(brains)
     tri = np.argsort(scores)
     sorted_scores = np.sort(scores)[::-1]
-    return array[tri][::-1], sorted_scores
+    return brains[tri][::-1], sorted_scores
 
 
-def pooling(sorted_brains, sorted_scores):  # !!!! scores est pas une variable locale???
+def pooling(sorted_brains, sorted_scores, consanguinity=True):  # !!!! scores est pas une variable locale???
     """
     choosing function
     :param sorted_brains: sorted array of brains
     :param sorted_scores : array of scores of the sorted brains
+    :param consanguinity : boolean value letting the same brain reproduce itself or not
+    (returning two times the same brain)
     :return: a couple of brains selected by their score in an array
     """
     # if brains and scores not sorted
@@ -271,19 +273,32 @@ def pooling(sorted_brains, sorted_scores):  # !!!! scores est pas une variable l
     pool = np.copy(sorted_scores)
     if np.sum(pool) == 0 or np.sum(pool) == 1:
         return np.array([sorted_brains[0], sorted_brains[0]])
+
+    # pool = squared difference between the scores
     pool -= int(pool[-1]**2/pool[0])
     pool **= 2
-    sum = np.sum(pool)
+    # 36 25 16 9
+    for i in range(len(pool) - 1):
+        pool[-i - 2] += pool[-i - 1]
+    sum = pool[0]
+    # 86 50 25 9
     parents = np.empty(2, dtype=tuple)
-    for j in range(2):
-        choice = np.random.randint(sum + 1)
-        value = pool[0]
-        for i in range(np.size(pool) - 1):
-            if choice <= value:
-                parents[j] = sorted_brains[i]
-            value += pool[i + 1]
 
-        parents[j] = sorted_brains[-1]
+    for j in range(2):  # 1 à changer
+        choice = np.random.randint(sum + 1)  # between 0 and 86
+        for i in range(np.size(pool) - 1):
+            if choice >= pool[i + 1]:
+                if j == 1 and consanguinity is not True and sorted_brains[i] == parents[0]:
+                    parents[1] = sorted_brains[i+1]
+                    break
+                parents[j] = sorted_brains[i]
+                break
+
+        if parents[j] is None:
+            if j == 1 and consanguinity is not True and sorted_brains[-1] == parents[0]:
+                parents[1] = sorted_brains[-2]
+            else:
+                parents[j] = sorted_brains[-1]
 
     return np.array(parents)
 
