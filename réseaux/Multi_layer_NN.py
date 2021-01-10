@@ -5,7 +5,7 @@ import time
 # main class
 class MLNeuralNetwork:
 
-    def __init__(self, structure):
+    def __init__(self, structure, amplitude=1):
         """
         initialise the network, with random weights and bias between [-1, 1]
         :param structure: list = [nbre_input, nbre_hidden1, nbre_hidden2, ..., nbre_output]
@@ -46,10 +46,9 @@ class MLNeuralNetwork:
                 self.weights_matrices = []
                 self.bias_vectors = []
                 for i in range(self.layers - 1):
-                    weight_matrix = np.random.randn(structure[i+1], structure[i])#/np.sqrt(structure[i])
-                    bias_vector = np.random.randn(structure[i + 1])#/np.sqrt(structure[i])
-                    #weight_matrix = (np.random.rand(structure[i+1], structure[i])) * 2 - 1
-                    #bias_vector = (np.random.random_sample(structure[i + 1])) * 2 - 1
+                    weight_matrix = np.random.randn(structure[i+1], structure[i]) / amplitude
+                    print(weight_matrix[0][0])
+                    bias_vector = np.random.randn(structure[i + 1]) / amplitude
                     self.weights_matrices.append(weight_matrix)
                     self.bias_vectors.append(bias_vector)
                 self.weights_matrices = np.array(self.weights_matrices, dtype="object")

@@ -13,6 +13,7 @@ n_eval = 1                      # number of evaluations of the brain
 bests = 1                       # number of best snakes that will be picked
 proportion = 0.5                # proportion in % of weights/biases that will be changed in the mutation
 d_proportion = 0                # decrease of the proportion for each bath
+amplitude_init = 1            # standard deviation of the w/b = 1/amplitude_init
 amplitude = 3                   # maximum of change in a w/b that can occurs in the mutation
 d_amplitude = 0.1               # decrease of the amplitude for each batch
 init_moves = 200                # number of moves the snake can do, can increase with time?
@@ -47,7 +48,7 @@ for i in range(n_generations):
                          proportion, amplitude,
                          init_moves, add_moves, i,
                          screen, speed, size, loaded,
-                         n_batch).play
+                         n_batch, amplitude_init).play
     pygame.quit()
     loaded = False
     ordered_children, scores = sorted_brains_scores(children)
