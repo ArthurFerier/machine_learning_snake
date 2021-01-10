@@ -7,6 +7,11 @@ import time
 
 
 # variables
+
+# what I have to change possibly :
+# test one snake on more than one game (can be bad luck for the snake else)
+
+
 n_generations = 20              # number of generations
 n_batch = 500                  # number of snakes in a batch
 n_eval = 1                      # number of evaluations of the brain
