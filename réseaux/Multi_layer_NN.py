@@ -38,8 +38,8 @@ class MLNeuralNetwork:
                         choice = int(np.random.choice(2, 1))
                         self.bias_vectors[e][f] = structure[choice].bias_vectors[e][f]
                 # converting to array for rapidity
-                self.weights_matrices = np.array(self.weights_matrices)
-                self.bias_vectors = np.array(self.bias_vectors)
+                self.weights_matrices = np.array(self.weights_matrices, dtype=object)
+                self.bias_vectors = np.array(self.bias_vectors, dtype=object)
             else:  # create random network
                 self.layers = len(structure)
                 self.structure = np.array(structure)
@@ -47,7 +47,6 @@ class MLNeuralNetwork:
                 self.bias_vectors = []
                 for i in range(self.layers - 1):
                     weight_matrix = np.random.randn(structure[i+1], structure[i]) / amplitude
-                    print(weight_matrix[0][0])
                     bias_vector = np.random.randn(structure[i + 1]) / amplitude
                     self.weights_matrices.append(weight_matrix)
                     self.bias_vectors.append(bias_vector)

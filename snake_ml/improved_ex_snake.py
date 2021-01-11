@@ -4,6 +4,7 @@ import pygame
 from réseaux.Multi_layer_NN import sorted_brains_scores, duration
 from matplotlib import pyplot as plt
 import time
+import os.path
 
 
 # variables
@@ -12,9 +13,9 @@ import time
 # test one snake on more than one game (can be bad luck for the snake else)
 
 
-n_generations = 20              # number of generations
-n_batch = 500                  # number of snakes in a batch
-n_eval = 1                      # number of evaluations of the brain
+n_generations = 2              # number of generations
+n_batch = 2                  # number of snakes in a batch
+n_eval = 1                      # number of evaluations of the brain   !!!!!!!!!!! to implement
 bests = 1                       # number of best snakes that will be picked
 proportion = 0.5                # proportion in % of weights/biases that will be changed in the mutation
 d_proportion = 0                # decrease of the proportion for each bath
@@ -23,15 +24,15 @@ amplitude = 3                   # maximum of change in a w/b that can occurs in 
 d_amplitude = 0.1               # decrease of the amplitude for each batch
 init_moves = 200                # number of moves the snake can do, can increase with time?
 add_moves = 100                 # number of moves added when the snake eats food
-screen = True                   # see the screen or not
-bool_speed = False              # tame the speed of the snake or not
-speed = 1000                       # speed in squares/s of the snake
-size = 20                      # size of the world
+screen = False                   # see the screen or not
+bool_speed = False              # tame the speed of the snake or not                  !!!!!!!!!!! to implement
+speed = 1000000                       # speed in squares/s of the snake
+size = 17                      # size of the world
 loaded = False                  # if we want to evolve a saved snake
 file = "best_of_gen/best_of_gen11.npz"     # file to load the snake to evolve
-text = "24_snake"               # name of the graph
-structure = [16, 16]            # hidden_layers of the brain
-namefile = "first_24_snake"     # name of the file containing the graph of the results
+text = "20 generations snake with amplitude_init = 1"               # name of the graph
+structure = [7, 7, 7]            # hidden_layers of the brain
+namefile = "test_multiple"     # name of the file containing the graph of the results
 
 # main program
 
@@ -86,6 +87,10 @@ plt.ylabel("best of the generation")
 plt.title("bests : {}   proportion : {}   amplitude : {}   n_batch : {}  "
           "structure : {}   size_screen : {}   move_i : {}   move_add : {} "
           .format(bests, proportion, amplitude, n_batch, structure, size, init_moves, add_moves))
-plt.savefig("data_snake_ml/{}".format(namefile))
+number = 0
+while os.path.exists("../data_snake_ml/{}_{}.png".format(namefile, number)):
+    print("hello")
+    number += 1
+plt.savefig("../data_snake_ml/{}_{}".format(namefile, number))
 plt.show()
 
