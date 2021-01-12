@@ -89,13 +89,6 @@ class Snake(object):
                 parents = pooling(pot_parents, scores_p).tolist()
                 self.brain = MLNeuralNetwork(parents)
                 self.brain.mutate(proportion, amplitude)
-                """
-                if batch == 0:
-                    self.brain = pot_parents[0]
-                else:
-                    parents = pooling(pot_parents, scores_p).tolist()
-                    self.brain = MLNeuralNetwork(parents)
-                    self.brain.mutate(proportion, amplitude)"""
 
     def __iter__(self):
         return iter(self.segments)
@@ -173,7 +166,7 @@ class Snake(object):
 class SnakeGame(object):
     def __init__(self, parents, scores_p, structure,
                  proportion, amplitude, moves, add_moves,
-                 generation, screen, speed, size, loaded, n_batch, amplitude_init=1):
+                 generation, screen, speed, size, loaded, n_batch, amplitude_init=1, n_eval=1):
         self.amplitude_init = amplitude_init
         pygame.display.set_caption('PyGame Snake')
         self.block_size = BLOCK_SIZE
@@ -200,23 +193,29 @@ class SnakeGame(object):
         self.loaded = loaded
         self.structure = structure
         self.save_moves = moves
+        self.n_eval = n_eval
 
 
-    def reset(self, parents, scores_p, proportion, amplitude, batch, speed, loaded, structure):
+    def reset(self, parents, scores_p, proportion, amplitude, batch, speed, loaded, structure, same=True):
         """Start a new game."""
         self.playing = True
         self.next_direction = DIRECTION_UP
         self.score = 0
-        self.snake = Snake(self.world.center, SNAKE_START_LENGTH,
-                           parents, scores_p, proportion,
-                           amplitude, batch, speed, loaded, structure, self.amplitude_init)
+        if not same:
+            # !!!!!! je dois modifier le world center, la length, speed etc
+            self.snake = Snake(self.world.center, SNAKE_START_LENGTH,
+                                parents, scores_p, proportion,
+                                amplitude, batch, speed, loaded, structure, self.amplitude_init)
+        else :
+            self.snake.speed = speed
+            self.snake.direction = DIRECTION_UP
+            self.snake.segments = deque([self.world.center - self.direction * i for i in range(SNAKE_START_LENGTH)])
         # à modifier en boucle for
         self.food = set()
         self.add_food()
 
     def add_food(self):
         """Ensure that there is at least one piece of food.
-        (And, with small probability, more than one.)
         """
         while not (self.food and randrange(4)):
             global food
@@ -292,6 +291,7 @@ class SnakeGame(object):
     @property
     def play(self):
         """Play game until the QUIT event is received."""
+        int eval = 0
         tik = 1/self.snake.speed
         while True:
             dt = self.clock.tick(FPS) / 1000.0  # convert to seconds
@@ -303,13 +303,19 @@ class SnakeGame(object):
                     self.input(e)
 
             if self.moves == 0:
-                self.snake.brain.score = self.score
-                self.brains[self.batch] = self.snake.brain
-                self.batch += 1
+                self.snake.brain.score += self.score
                 if self.batch == self.n_batch:
                     return self.brains
-                self.reset(self.parents, self.scores_p, self.proportion, self.amplitude,
-                           self.batch, self.speed, self.loaded, self.structure)
+                if eval == self.n_eval:
+                    eval = 0
+                    self.brains[self.batch] = self.snake.brain
+                    self.batch += 1
+                    self.reset(self.parents, self.scores_p, self.proportion, self.amplitude,
+                           self.batch, self.speed, self.loaded, self.structure, same=False)
+                else:
+                    eval += 1
+                    self.reset(self.parents, self.scores_p, self.proportion, self.amplitude,
+                               self.batch, self.speed, self.loaded, self.structure, same=True)
                 self.moves = self.save_moves
 
 
@@ -441,13 +447,22 @@ class SnakeGame(object):
                 if self.see:
                     self.draw()
             else:
-                self.snake.brain.score = self.score
+                self.snake.brain.score += self.score
                 self.brains[self.batch] = self.snake.brain
                 self.batch += 1
                 if self.batch == self.n_batch:
-                    return self.brains  # TypeError: 'numpy.ndarray' object is not callable
-                self.reset(self.parents, self.scores_p, self.proportion, self.amplitude,
-                           self.batch, self.speed, self.loaded, self.structure)
+                    return self.brains
+                if eval == self.n_eval:
+                    eval = 0
+                    self.brains[self.batch] = self.snake.brain
+                    self.batch += 1
+                    self.reset(self.parents, self.scores_p, self.proportion, self.amplitude,
+                           self.batch, self.speed, self.loaded, self.structure, same=False)
+                else:
+                    eval += 1
+                    self.reset(self.parents, self.scores_p, self.proportion, self.amplitude,
+                               self.batch, self.speed, self.loaded, self.structure, same=True)
+
                 self.moves = self.save_moves
 
             if self.see:

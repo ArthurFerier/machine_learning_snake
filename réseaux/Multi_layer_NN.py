@@ -248,12 +248,12 @@ def choice(array):
 
 # pooling functions
 
-def sorted_brains_scores(brains):
+def sorted_brains_scores(brains, n_eval=1):
     """
     :param brains: array of type ndarray containing the brains
     :return: the array sorted with the biggest brain first
     """
-    scores = get_scores(brains)
+    scores = get_scores(brains)/n_eval
     tri = np.argsort(scores)
     sorted_scores = np.sort(scores)[::-1]
     return brains[tri][::-1], sorted_scores

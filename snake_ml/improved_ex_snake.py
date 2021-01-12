@@ -54,7 +54,7 @@ for i in range(n_generations):
                          proportion, amplitude,
                          init_moves, add_moves, i,
                          screen, speed, size, loaded,
-                         n_batch, amplitude_init).play
+                         n_batch, amplitude_init, n_eval).play
     pygame.quit()
     loaded = False
     ordered_children, scores = sorted_brains_scores(children)
