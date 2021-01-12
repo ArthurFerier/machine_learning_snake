@@ -177,7 +177,7 @@ class SnakeGame(object):
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font('freesansbold.ttf', 20)
         self.world = Rect((0, 0), Vector((size, size)))
-        self.reset(parents, scores_p, proportion, amplitude, 0, speed, loaded, structure)
+        self.reset(parents, scores_p, proportion, amplitude, 0, speed, loaded, structure, same=False)
         self.moves = moves
         self.add_moves = add_moves
         self.generation = generation
@@ -202,14 +202,13 @@ class SnakeGame(object):
         self.next_direction = DIRECTION_UP
         self.score = 0
         if not same:
-            # !!!!!! je dois modifier le world center, la length, speed etc
             self.snake = Snake(self.world.center, SNAKE_START_LENGTH,
                                 parents, scores_p, proportion,
                                 amplitude, batch, speed, loaded, structure, self.amplitude_init)
         else :
             self.snake.speed = speed
             self.snake.direction = DIRECTION_UP
-            self.snake.segments = deque([self.world.center - self.direction * i for i in range(SNAKE_START_LENGTH)])
+            self.snake.segments = deque([self.world.center - DIRECTION_UP * i for i in range(SNAKE_START_LENGTH)])
         # à modifier en boucle for
         self.food = set()
         self.add_food()
@@ -270,7 +269,7 @@ class SnakeGame(object):
         """Draw text at position p."""
         self.screen.blit(self.font.render(text, 1, TEXT_COLOR), p)
 
-    def draw(self):
+    def draw(self, eval=0):
         """Draw game (while playing)."""
         self.screen.fill(BACKGROUND_COLOR)
         for p in self.snake:
@@ -281,6 +280,8 @@ class SnakeGame(object):
         self.draw_text("Moves left: {}".format(self.moves), (20, 40))
         self.draw_text("generation: {}".format(self.generation), (20, 60))
         self.draw_text("batch: {}".format(self.batch), (20, 80))
+        self.draw_text("essai {} of brain".format(eval), (20, 100))
+
 
     def draw_death(self):
         """Draw game (after game over)."""
@@ -291,7 +292,7 @@ class SnakeGame(object):
     @property
     def play(self):
         """Play game until the QUIT event is received."""
-        int eval = 0
+        eval = 1
         tik = 1/self.snake.speed
         while True:
             dt = self.clock.tick(FPS) / 1000.0  # convert to seconds
@@ -304,14 +305,15 @@ class SnakeGame(object):
 
             if self.moves == 0:
                 self.snake.brain.score += self.score
-                if self.batch == self.n_batch:
-                    return self.brains
-                if eval == self.n_eval:
-                    eval = 0
+
+                if eval == self.n_eval :
+                    eval = 1
                     self.brains[self.batch] = self.snake.brain
                     self.batch += 1
                     self.reset(self.parents, self.scores_p, self.proportion, self.amplitude,
                            self.batch, self.speed, self.loaded, self.structure, same=False)
+                    if self.batch == self.n_batch:
+                        return self.brains
                 else:
                     eval += 1
                     self.reset(self.parents, self.scores_p, self.proportion, self.amplitude,
@@ -445,19 +447,19 @@ class SnakeGame(object):
                     self.brain_action(actions)
 
                 if self.see:
-                    self.draw()
+                    self.draw(eval=eval)
             else:
                 self.snake.brain.score += self.score
                 self.brains[self.batch] = self.snake.brain
-                self.batch += 1
-                if self.batch == self.n_batch:
-                    return self.brains
+
                 if eval == self.n_eval:
-                    eval = 0
+                    eval = 1
                     self.brains[self.batch] = self.snake.brain
                     self.batch += 1
                     self.reset(self.parents, self.scores_p, self.proportion, self.amplitude,
                            self.batch, self.speed, self.loaded, self.structure, same=False)
+                    if self.batch == self.n_batch:
+                        return self.brains
                 else:
                     eval += 1
                     self.reset(self.parents, self.scores_p, self.proportion, self.amplitude,

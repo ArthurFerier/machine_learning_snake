@@ -53,9 +53,9 @@ class MLNeuralNetwork:
                 self.weights_matrices = np.array(self.weights_matrices, dtype="object")
                 self.bias_vectors = np.array(self.bias_vectors, dtype="object")
         else:  # load network
-            np_load_old = np.load
-            np.load = lambda *a, **k: np_load_old(*a, allow_pickle=True, **k)
-            data = np.load(structure)
+            #np_load_old = np.load
+            #np.load = lambda *a, **k: np_load_old(*a, allow_pickle=True, **k)
+            data = np.load(structure, allow_pickle=True)
             self.weights_matrices = data["w"]
             self.layers = len(self.weights_matrices) + 1
             self.bias_vectors = data["b"]
