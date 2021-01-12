@@ -14,14 +14,14 @@ import os.path
 
 
 n_generations = 10              # number of generations
-n_batch = 100                  # number of snakes in a batch
-n_eval = 4                      # number of evaluations of the brain
+n_batch = 120                  # number of snakes in a batch
+n_eval = 10                      # number of evaluations of the brain
 bests = 1                       # number of best snakes that will be picked
 proportion = 0.5                # proportion in % of weights/biases that will be changed in the mutation
-d_proportion = 0                # decrease of the proportion for each bath
+d_proportion = 0.025                # decrease of the proportion for each bath
 amplitude_init = 1            # standard deviation of the w/b = 1/amplitude_init
 amplitude = 3                   # maximum of change in a w/b that can occurs in the mutation
-d_amplitude = 0.1               # decrease of the amplitude for each batch
+d_amplitude = 0.1               # decrease of the amplitude for each generation
 init_moves = 200                # number of moves the snake can do, can increase with time?
 add_moves = 100                 # number of moves added when the snake eats food
 screen = False                   # see the screen or not
@@ -30,10 +30,10 @@ speed = 4000000                       # speed in squares/s of the snake
 size = 17                      # size of the world
 loaded = True                 # if we want to evolve a saved snake
 save = True
-file = "best_multiple_tries/best_of_gen19.npz"  # file to load the snake to evolve
+file = "best_multiple_tries/best_of_gen8.npz"  # file to load the snake to evolve
 text = "20 generations snake with amplitude_init = 1"               # name of the graph
 structure = [7, 7, 7]            # hidden_layers of the brain
-namefile = "first_try_multiple_eval"     # name of the file containing the graph of the results
+namefile = "first_try_multiple_eval_n_eval_10"     # name of the file containing the graph of the results
 
 # main program
 
@@ -74,7 +74,7 @@ for i in range(n_generations):
     y_median[i] = median_scores
 
     generations[i] = parents
-    ordered_children[0].save("best_multiple_tries/best_of_gen"+str(i))
+    ordered_children[0].save("best_multiple_tries_2/best_of_gen"+str(i))
 
     proportion -= d_proportion
     amplitude -= d_amplitude
