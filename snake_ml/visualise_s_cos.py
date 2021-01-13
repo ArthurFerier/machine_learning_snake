@@ -6,8 +6,9 @@ import pygame
 
 pygame.init()
 
-#brain = MLNeuralNetwork("best_multiple_tries/best_of_gen7.npz")
-#print(brain)
-a = SnakeGame("best_multiple_tries/best_of_gen7.npz", [], [], 0, 0, 10000, 0, 0, 0, True, 4, 17, True).play
+brain = MLNeuralNetwork("best_of_gen/best_of_gen0.npz")
+print(brain)
+a = SnakeGame("best_of_gen/best_of_gen0.npz",
+              [], [], 0, 0, 10000, 0, 0, 0, True, 15, 20, False).play
 
 pygame.quit()
