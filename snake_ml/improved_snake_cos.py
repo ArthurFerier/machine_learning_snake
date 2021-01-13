@@ -66,7 +66,7 @@ KEY_DIRECTION = {
 
 
 class Snake(object):
-    def __init__(self, start, start_length, pot_parents, scores_p, proportion, amplitude, batch, speed, loaded, struct, amplitude_init):
+    def __init__(self, start, start_length, pot_parents, scores_p, proportion, amplitude, batch, speed, loaded, struct):
         self.speed = speed                # Speed in squares per second.
         self.timer = 1.0 / self.speed     # Time remaining to next movement.
         self.growth_pending = 0           # Number of segments still to grow.
@@ -84,7 +84,7 @@ class Snake(object):
         else:
             if len(pot_parents) == 0:
                 structure = np.concatenate(([7], struct, [3])).tolist()
-                self.brain = MLNeuralNetwork(structure, amplitude_init)
+                self.brain = MLNeuralNetwork(structure)
             else:
                 parents = pooling(pot_parents, scores_p).tolist()
                 self.brain = MLNeuralNetwork(parents)
@@ -166,8 +166,7 @@ class Snake(object):
 class SnakeGame(object):
     def __init__(self, parents, scores_p, structure,
                  proportion, amplitude, moves, add_moves,
-                 generation, screen, speed, size, loaded, n_batch, amplitude_init=1, n_eval=1):
-        self.amplitude_init = amplitude_init
+                 generation, screen, speed, size, loaded, n_batch, n_eval=1):
         pygame.display.set_caption('PyGame Snake')
         self.block_size = BLOCK_SIZE
         self.see = screen
@@ -204,7 +203,7 @@ class SnakeGame(object):
         if not same:
             self.snake = Snake(self.world.center, SNAKE_START_LENGTH,
                                 parents, scores_p, proportion,
-                                amplitude, batch, speed, loaded, structure, self.amplitude_init)
+                                amplitude, batch, speed, loaded, structure)
         else :
             self.snake.speed = speed
             self.snake.direction = DIRECTION_UP
