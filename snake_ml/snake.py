@@ -77,6 +77,7 @@ class Snake(object):
             self.brain = MLNeuralNetwork(pot_parents)
             self.brain.mutate(proportion, amplitude)
         elif type(pot_parents) == str and not loaded:
+            print("je passe ici sans le mutate")
             self.brain = MLNeuralNetwork(pot_parents)
         elif type(pot_parents) == MLNeuralNetwork:
             self.brain = pot_parents
@@ -194,7 +195,7 @@ class SnakeGame(object):
         self.snake = Snake(self.world.center, SNAKE_START_LENGTH,
                            parents, scores_p, proportion,
                            amplitude, batch, speed, loaded, structure)
-        # à modifier en boucle for
+
         self.food = set()
         self.add_food()
 

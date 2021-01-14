@@ -77,6 +77,7 @@ class Snake(object):
             self.brain = MLNeuralNetwork(pot_parents)
             self.brain.mutate(proportion, amplitude)
         elif type(pot_parents) == str and not loaded:
+            print("on passe bien sans modif le brain")
             self.brain = MLNeuralNetwork(pot_parents)
         elif type(pot_parents) == MLNeuralNetwork:
             self.brain = pot_parents

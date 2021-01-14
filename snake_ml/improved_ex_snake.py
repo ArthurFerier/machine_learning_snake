@@ -13,22 +13,27 @@ import os.path
 # test one snake on more than one game (can be bad luck for the snake else)
 
 
-n_generations = 15              # number of generations
+n_generations = 10              # number of generations
 n_batch = 120                  # number of snakes in a batch
 n_eval = 10                      # number of evaluations of the brain
 bests = 1                       # number of best snakes that will be picked
+
 proportion = 0.5                # proportion in % of weights/biases that will be changed in the mutation
 d_proportion = 0                # decrease of the proportion for each bath
-standart_dev = 4                   # maximum of change in a w/b that can occurs in the mutation
+standard_dev = 2                   # standard deviation of the mutation
 d_amplitude = 0.1               # decrease of the amplitude for each generation
+
 init_moves = 200                # number of moves the snake can do, can increase with time?
 add_moves = 100                 # number of moves added when the snake eats food
+
 screen = True                   # see the screen or not
 bool_speed = False              # tame the speed of the snake or not                  !!!!!!!!!!! to implement
 speed = 4000000                       # speed in squares/s of the snake
 size = 17                      # size of the world
+
 loaded = True                 # if we want to evolve a saved snake
 file = "interesting_snakes/impressive_self_avoiding.npz"  # file to load the snake to evolve
+
 save = True
 text = "20 generations snake with amplitude_init = 1"               # name of the graph
 structure = [6, 6]            # hidden_layers of the brain
@@ -51,7 +56,7 @@ for i in range(n_generations):
 
     pygame.init()
     children = SnakeGame(parents, scores_p, structure,
-                         proportion, standart_dev,
+                         proportion, standard_dev,
                          init_moves, add_moves, i,
                          screen, speed, size, loaded,
                          n_batch, n_eval).play
@@ -76,7 +81,7 @@ for i in range(n_generations):
     ordered_children[0].save("best_of_gen/best_of_gen"+str(i))
 
     proportion -= d_proportion
-    standart_dev -= d_amplitude
+    standard_dev -= d_amplitude
 
 t1 = time.perf_counter()
 print(duration(t1 - t0))
@@ -89,7 +94,7 @@ plt.xlabel("generation")
 plt.ylabel("best of the generation")
 plt.title("bests : {}   proportion : {}   amplitude_max : {}   n_batch : {}  "
           "structure : {}   size_screen : {}   move_i : {}   move_add : {} "
-          .format(bests, proportion, standart_dev, n_batch, structure, size, init_moves, add_moves))
+          .format(bests, proportion, standard_dev, n_batch, structure, size, init_moves, add_moves))
 number = 0
 while os.path.exists("../data_snake_ml/{}_{}.png".format(namefile, number)):
     print("hello")
