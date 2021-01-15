@@ -5,7 +5,14 @@
 The aim of this project is to develop my own neural network library in python
 using only numpy as external library.
 When it was done, I had to test it and chose to train neural networks on the snake 
-game. I can't find the site where I initially downloaded the game. 
+game. I can't find the site where I initially downloaded the game, but the original is in the file save_snake.py. 
+
+
+The most up to date file of the library is Multi_layer_NN.py in the folder réseaux. The other files are 
+residual files that shouldn't be used.
+I implemented some functions to help on evolving a neural network with generations, where the right output isn't known.
+I also implemented a linear regression, to train networks on simulations where the result is known.  
+the name of the function is "adjust" in the file Multi_layer_NN.
 
 The graphs of the results of all the training are in the folder data_snake_ml.
 They aren't really organised but that's what I used.

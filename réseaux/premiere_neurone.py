@@ -1,3 +1,6 @@
+# first try of a brain, with only one neuron
+
+
 from numpy import random
 import sympy
 import time
