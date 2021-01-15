@@ -26,7 +26,7 @@ d_standard_dev = 0.1               # decrease of the amplitude for each generati
 init_moves = 100                # number of moves the snake can do, can increase with time?
 add_moves = 100                 # number of moves added when the snake eats food
 
-screen = True                   # see the screen or not              !!!!!!!!!!! to implement
+screen = True                   # see the screen or not
 speed = 4000000                       # speed in squares/s of the snake
 size = 17                      # size of the world
 
