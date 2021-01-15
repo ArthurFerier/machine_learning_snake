@@ -13,31 +13,30 @@ import os.path
 # test one snake on more than one game (can be bad luck for the snake else)
 
 
-n_generations = 10              # number of generations
-n_batch = 120                  # number of snakes in a batch
-n_eval = 10                      # number of evaluations of the brain
+n_generations = 5              # number of generations
+n_batch = 100                  # number of snakes in a batch
+n_eval = 15                      # number of evaluations of the brain
 bests = 1                       # number of best snakes that will be picked
 
-proportion = 0.5                # proportion in % of weights/biases that will be changed in the mutation
+proportion = 0.3                # proportion in % of weights/biases that will be changed in the mutation
 d_proportion = 0                # decrease of the proportion for each bath
 standard_dev = 2                   # standard deviation of the mutation
-d_amplitude = 0.1               # decrease of the amplitude for each generation
+d_standard_dev = 0.1               # decrease of the amplitude for each generation
 
-init_moves = 200                # number of moves the snake can do, can increase with time?
+init_moves = 100                # number of moves the snake can do, can increase with time?
 add_moves = 100                 # number of moves added when the snake eats food
 
-screen = True                   # see the screen or not
-bool_speed = False              # tame the speed of the snake or not                  !!!!!!!!!!! to implement
+screen = True                   # see the screen or not              !!!!!!!!!!! to implement
 speed = 4000000                       # speed in squares/s of the snake
 size = 17                      # size of the world
 
 loaded = True                 # if we want to evolve a saved snake
-file = "interesting_snakes/impressive_self_avoiding.npz"  # file to load the snake to evolve
+file = "interesting_snakes/best_snake_score_50.npz"  # file to load the snake to evolve
 
 save = True
-text = "20 generations snake with amplitude_init = 1"               # name of the graph
+text = "continuation best_snake_score_50"               # name of the graph
 structure = [6, 6]            # hidden_layers of the brain
-namefile = "continuation_Impressive_self_avoiding"     # name of the file containing the graph of the results
+namefile = "continuation_best_snake_score_50"     # name of the file containing the graph of the results
 
 # main program
 
@@ -81,7 +80,7 @@ for i in range(n_generations):
     ordered_children[0].save("best_of_gen/best_of_gen"+str(i))
 
     proportion -= d_proportion
-    standard_dev -= d_amplitude
+    standard_dev -= d_standard_dev
 
 t1 = time.perf_counter()
 print(duration(t1 - t0))

@@ -13,6 +13,7 @@ class Vector(tuple):
     v + w, w - v, v * 10, 100 * v, -v
     ((4, 6), (2, 2), (10, 20), (100, 200), (-1, -2))
     """
+
     def __add__(self, other):
         return Vector(v + w for v, w in zip(self, other))
 
@@ -35,42 +36,43 @@ class Vector(tuple):
         return -1 * self
 
 
-FPS = 60                        # Game frames per second
-SEGMENT_SCORE = 1               # Score per segment
 
-SNAKE_SPEED_INCREMENT = 0.25    # Snake speeds up this much each time it grows
-SNAKE_START_LENGTH = 5          # Initial snake length in segments
+FPS = 60  # Game frames per second
+SEGMENT_SCORE = 1  # Score per segment
 
-WORLD_SIZE = Vector((20, 20))   # World size, in blocks
-BLOCK_SIZE = 24                 # Block size, in pixels
+SNAKE_SPEED_INCREMENT = 0.25  # Snake speeds up this much each time it grows
+SNAKE_START_LENGTH = 5  # Initial snake length in segments
+
+WORLD_SIZE = Vector((20, 20))  # World size, in blocks
+BLOCK_SIZE = 24  # Block size, in pixels
 
 BACKGROUND_COLOR = 0, 0, 0
 SNAKE_COLOR = 255, 255, 255
 FOOD_COLOR = 255, 0, 0
 DEATH_COLOR = 255, 0, 0
-TEXT_COLOR = 255, 255, 255
+TEXT_COLOR = 0, 0, 255
 
-DIRECTION_UP    = Vector((0, -1))
-DIRECTION_DOWN  = Vector((0,  1))
-DIRECTION_LEFT  = Vector((-1,  0))
-DIRECTION_RIGHT = Vector((1,  0))
-DIRECTION_DR    = DIRECTION_DOWN + DIRECTION_RIGHT
+DIRECTION_UP = Vector((0, -1))
+DIRECTION_DOWN = Vector((0, 1))
+DIRECTION_LEFT = Vector((-1, 0))
+DIRECTION_RIGHT = Vector((1, 0))
+DIRECTION_DR = DIRECTION_DOWN + DIRECTION_RIGHT
 
 # Map from PyGame key event to the corresponding direction.
 KEY_DIRECTION = {
-    K_q: DIRECTION_UP,    K_UP:    DIRECTION_UP,
-    K_s: DIRECTION_DOWN,  K_DOWN:  DIRECTION_DOWN,
-    K_a: DIRECTION_LEFT,  K_LEFT:  DIRECTION_LEFT,
+    K_q: DIRECTION_UP, K_UP: DIRECTION_UP,
+    K_s: DIRECTION_DOWN, K_DOWN: DIRECTION_DOWN,
+    K_a: DIRECTION_LEFT, K_LEFT: DIRECTION_LEFT,
     K_d: DIRECTION_RIGHT, K_RIGHT: DIRECTION_RIGHT,
 }
 
 
 class Snake(object):
     def __init__(self, start, start_length, pot_parents, scores_p, proportion, amplitude, batch, speed, loaded, struct):
-        self.speed = speed                # Speed in squares per second.
-        self.timer = 1.0 / self.speed     # Time remaining to next movement.
-        self.growth_pending = 0           # Number of segments still to grow.
-        self.direction = DIRECTION_UP     # Current movement direction.
+        self.speed = speed  # Speed in squares per second.
+        self.timer = 1.0 / self.speed  # Time remaining to next movement.
+        self.growth_pending = 0  # Number of segments still to grow.
+        self.direction = DIRECTION_UP  # Current movement direction.
         self.segments = deque([start - self.direction * i for i in range(start_length)])
         # juste une liste de tuple contenant les coordonnées des blocks du snake [(xhead, yhead), (xsec, ysec),...]
         if type(pot_parents) == str and loaded:
@@ -101,15 +103,15 @@ class Snake(object):
         """Return the position of the snake's head."""
         return self.segments[0]
 
-    def update(self, dt, direction):                      # dans cette fonction que je dois faire le brain
+    def update(self, dt, direction):  # dans cette fonction que je dois faire le brain
         """Update the snake by dt seconds and possibly set direction."""
         self.timer -= dt
         if self.timer > 0:
             # Nothing to do yet.
             return
 
-        #if self.direction != -direction:
-            #self.direction = direction
+        # if self.direction != -direction:
+        # self.direction = direction
 
         if self.direction == DIRECTION_UP:
             if direction == "middle":
@@ -172,7 +174,8 @@ class SnakeGame(object):
         self.block_size = BLOCK_SIZE
         self.see = screen
         if self.see:
-            self.window = pygame.display.set_mode(Vector((size, size)) * self.block_size) #turn off if doesn't want to see the screen
+            self.window = pygame.display.set_mode(
+                Vector((size, size)) * self.block_size)  # turn off if doesn't want to see the screen
         self.screen = pygame.display.get_surface()
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font('freesansbold.ttf', 20)
@@ -203,9 +206,9 @@ class SnakeGame(object):
         self.score = 0
         if not same:
             self.snake = Snake(self.world.center, SNAKE_START_LENGTH,
-                                parents, scores_p, proportion,
-                                amplitude, batch, speed, loaded, structure)
-        else :
+                               parents, scores_p, proportion,
+                               amplitude, batch, speed, loaded, structure)
+        else:
             self.snake.speed = speed
             self.snake.direction = DIRECTION_UP
             self.snake.segments = deque([self.world.center - DIRECTION_UP * i for i in range(SNAKE_START_LENGTH)])
@@ -230,7 +233,7 @@ class SnakeGame(object):
 
 
     def brain_action(self, actions):
-        #print(actions)
+        # print(actions)
 
         if actions[0] == 1:
             self.next_direction = "left"
@@ -253,7 +256,7 @@ class SnakeGame(object):
             self.food.remove(head)
             self.add_food()
             self.snake.grow()
-            self.score += 1 #len(self.snake) * SEGMENT_SCORE
+            self.score += 1  # len(self.snake) * SEGMENT_SCORE
             self.moves += self.add_moves
 
         # If snake collides with self or the screen boundaries, then
@@ -267,7 +270,7 @@ class SnakeGame(object):
 
     def draw_text(self, text, p):
         """Draw text at position p."""
-        self.screen.blit(self.font.render(text, 1, TEXT_COLOR), p)
+        self.screen.blit(self.font.render(text, True, TEXT_COLOR), p)
 
     def draw(self, eval=0):
         """Draw game (while playing)."""
@@ -277,10 +280,9 @@ class SnakeGame(object):
         for f in self.food:
             pygame.draw.rect(self.screen, FOOD_COLOR, self.block(f))
         self.draw_text("Score: {}".format(self.score), (20, 20))
-        self.draw_text("Moves left: {}".format(self.moves), (20, 40))
-        self.draw_text("generation: {}".format(self.generation), (20, 60))
-        self.draw_text("batch: {}".format(self.batch), (20, 80))
-        self.draw_text("essai {} of brain".format(eval), (20, 100))
+        self.draw_text("generation: {}".format(self.generation), (20, 40))
+        self.draw_text("batch: {}".format(self.batch), (20, 60))
+        self.draw_text("essai {} of brain".format(eval), (20, 80))
 
 
     def draw_death(self):
@@ -293,7 +295,7 @@ class SnakeGame(object):
     def play(self):
         """Play game until the QUIT event is received."""
         eval = 1
-        tik = 1/self.snake.speed
+        tik = 1 / self.snake.speed
         while True:
             dt = self.clock.tick(FPS) / 1000.0  # convert to seconds
 
@@ -306,12 +308,12 @@ class SnakeGame(object):
             if self.moves == 0:
                 self.snake.brain.score += self.score
 
-                if eval == self.n_eval :
+                if eval == self.n_eval:
                     eval = 1
                     self.brains[self.batch] = self.snake.brain
                     self.batch += 1
                     self.reset(self.parents, self.scores_p, self.proportion, self.amplitude,
-                           self.batch, self.speed, self.loaded, self.structure, same=False)
+                               self.batch, self.speed, self.loaded, self.structure, same=False)
                     if self.batch == self.n_batch:
                         return self.brains
                 else:
@@ -320,13 +322,12 @@ class SnakeGame(object):
                                self.batch, self.speed, self.loaded, self.structure, same=True)
                 self.moves = self.save_moves
 
-
             if self.playing:
                 self.update(dt)
                 tik -= dt
 
                 if tik < 0:
-                    tik += 1/self.snake.speed
+                    tik += 1 / self.snake.speed
                     self.moves -= 1
 
                     # determining the cosinus of the angle between the food and the head
@@ -342,9 +343,9 @@ class SnakeGame(object):
 
                         adj = abs(self.snake.segments[0][0] - food[0])
                         if food[0] - self.snake.segments[0][0] > 0:
-                            cos_food = adj/hyp
+                            cos_food = adj / hyp
                         else:
-                            cos_food = -adj/hyp
+                            cos_food = -adj / hyp
 
                     elif self.snake.direction == DIRECTION_DOWN:
                         if food[1] - self.snake.segments[0][1] > 0:
@@ -356,9 +357,9 @@ class SnakeGame(object):
 
                         adj = abs(self.snake.segments[0][0] - food[0])
                         if food[0] - self.snake.segments[0][0] > 0:
-                            cos_food = -adj/hyp
+                            cos_food = -adj / hyp
                         else:
-                            cos_food = adj/hyp
+                            cos_food = adj / hyp
 
                     if self.snake.direction == DIRECTION_RIGHT:
                         if food[0] - self.snake.segments[0][0] > 0:
@@ -370,9 +371,9 @@ class SnakeGame(object):
 
                         adj = abs(self.snake.segments[0][1] - food[1])
                         if food[1] - self.snake.segments[0][1] > 0:
-                            cos_food = adj/hyp
+                            cos_food = adj / hyp
                         else:
-                            cos_food = -adj/hyp
+                            cos_food = -adj / hyp
 
                     elif self.snake.direction == DIRECTION_LEFT:
                         if food[0] - self.snake.segments[0][0] > 0:
@@ -384,10 +385,10 @@ class SnakeGame(object):
 
                         adj = abs(self.snake.segments[0][1] - food[1])
                         if food[1] - self.snake.segments[0][1] > 0:
-                            cos_food = -adj/hyp
+                            cos_food = -adj / hyp
                         else:
-                            cos_food = adj/hyp
-                    #print(cos_food)
+                            cos_food = adj / hyp
+                    # print(cos_food)
                     # determining if there are body parts next to the head
                     batch_count = 0  # the 3 first blocks doesn't matter
                     ur = 0
@@ -457,7 +458,7 @@ class SnakeGame(object):
                     self.brains[self.batch] = self.snake.brain
                     self.batch += 1
                     self.reset(self.parents, self.scores_p, self.proportion, self.amplitude,
-                           self.batch, self.speed, self.loaded, self.structure, same=False)
+                               self.batch, self.speed, self.loaded, self.structure, same=False)
                     if self.batch == self.n_batch:
                         return self.brains
                 else:

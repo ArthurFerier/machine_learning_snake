@@ -19,9 +19,9 @@ pygame.init()
 
 
 # try imprevod snake cos :
-brain = MLNeuralNetwork("/home/marty/informatique/machine_learning/snake_ml/best_of_gen/best_of_gen9.npz")
+brain = MLNeuralNetwork("/home/marty/informatique/machine_learning/snake_ml/interesting_snakes/best_snake_score_50.npz")
 print(brain)
-a = SnakeGame("best_of_gen/best_of_gen9.npz", 0, [6, 6], 0, 0, 1000, 100, 1, True, 5, 17, False, 1).play
+a = SnakeGame("interesting_snakes/best_snake_score_50.npz", 0, [6, 6], 0, 0, 1000, 100, 1, True, 2, 17, False, 1).play
 
 brain = MLNeuralNetwork("/home/marty/informatique/machine_learning/snake_ml/interesting_snakes/best_snake_score_50.npz")
 print(brain)
