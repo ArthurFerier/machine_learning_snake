@@ -283,7 +283,7 @@ class SnakeGame(object):
         snake_length = len(self.snake)
         for p in self.snake:
             pygame.draw.rect(self.screen, SNAKE_COLOR3, self.block(p))
-            SNAKE_COLOR3[0] -= int(255/snake_length) - 1
+            SNAKE_COLOR3[0] -= int(255/snake_length)
             """
             if first:
                 pygame.draw.rect(self.screen, SNAKE_COLOR3, self.block(p))
