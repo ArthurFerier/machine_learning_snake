@@ -47,7 +47,9 @@ WORLD_SIZE = Vector((20, 20))  # World size, in blocks
 BLOCK_SIZE = 24  # Block size, in pixels
 
 BACKGROUND_COLOR = 0, 0, 0
-SNAKE_COLOR = 255, 255, 255
+SNAKE_COLOR = 0, 255, 0
+SNAKE_COLOR2 = 255, 255, 0
+SNAKE_COLOR3 = 255, 0, 100
 FOOD_COLOR = 255, 0, 0
 DEATH_COLOR = 255, 0, 0
 TEXT_COLOR = 0, 0, 255
@@ -212,7 +214,7 @@ class SnakeGame(object):
             self.snake.speed = speed
             self.snake.direction = DIRECTION_UP
             self.snake.segments = deque([self.world.center - DIRECTION_UP * i for i in range(SNAKE_START_LENGTH)])
-        # à modifier en boucle for
+
         self.food = set()
         self.add_food()
 
@@ -275,8 +277,20 @@ class SnakeGame(object):
     def draw(self, eval=0):
         """Draw game (while playing)."""
         self.screen.fill(BACKGROUND_COLOR)
+        switch = True
+        first = True
         for p in self.snake:
-            pygame.draw.rect(self.screen, SNAKE_COLOR, self.block(p))
+            if first:
+                pygame.draw.rect(self.screen, SNAKE_COLOR3, self.block(p))
+                first = False
+            else:
+                if switch:
+                    pygame.draw.rect(self.screen, SNAKE_COLOR, self.block(p))
+                    switch = False
+                else:
+                    pygame.draw.rect(self.screen, SNAKE_COLOR2, self.block(p))
+                    switch = True
+
         for f in self.food:
             pygame.draw.rect(self.screen, FOOD_COLOR, self.block(f))
         self.draw_text("Score: {}".format(self.score), (20, 20))

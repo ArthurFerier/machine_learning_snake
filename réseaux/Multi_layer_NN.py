@@ -63,6 +63,20 @@ class MLNeuralNetwork:
 
         self.score = 0
 
+    def compareTo(self, other):
+        for i in range(len(self.weights_matrices)):
+            for line in range(len(self.weights_matrices[i])):
+                for elem in range(len(self.weights_matrices[i][line])):
+                    if self.weights_matrices[i][line][elem] != other.weights_matrices[i][line][elem]:
+                        return False
+
+        for i in range(len(self.bias_vectors)):
+            for elem in range(len(self.bias_vectors[i])):
+                if self.bias_vectors[i][elem] != other.bias_vectors[i][elem]:
+                    return False
+
+        return True
+
     def __str__(self):
         """
         :return: the structure of hte NN, the weights and bias
