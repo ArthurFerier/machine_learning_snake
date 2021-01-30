@@ -19,17 +19,10 @@ pygame.init()
 
 
 # try imprevod snake cos :
-path = "best_of_gen/best_of_gen13.npz"  # best snake
-#path = "best_of_gen/best_of_gen4.npz"
-
-brain2 = MLNeuralNetwork(path)
-
-a = SnakeGame(path, 0, [6, 6], 0, 0, 1000, 100, 1, True, 10, 17, False, 1).play
-
+path = "interesting_snakes/best_snake_score_50.npz"
 brain = MLNeuralNetwork(path)
 print(brain)
-print(brain2)
-print(brain.compareTo(brain2))
+a = SnakeGame(path, 0, [6, 6], 0, 0, 100000, 10000, 1, True, 2, 25, False, 1).play
 
 
 pygame.quit()
