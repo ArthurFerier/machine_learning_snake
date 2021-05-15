@@ -4,6 +4,7 @@ import pygame
 from random import randrange
 from pygame.locals import *
 from réseaux.Multi_layer_NN import *
+import time
 
 
 class Vector(tuple):
@@ -311,6 +312,15 @@ class SnakeGame(object):
         self.draw_text("Game over! Press Space to start a new game", (20, 150))
         self.draw_text("Your score is: {}".format(self.score), (140, 180))
 
+    def only3face(self):
+        return 1
+
+    def upRnoR(self):
+        return 1
+
+    def upLnoL(self):
+        return 1
+
     @property
     def play(self):
         """Play game until the QUIT event is received."""
@@ -461,9 +471,30 @@ class SnakeGame(object):
                                 walls = np.concatenate((walls[6:], walls[:-2]))
                             walls = walls[3:]
 
-                    obs = np.concatenate(([cos_food], [direction], walls))
-                    actions = self.snake.brain.think(obs)
-                    actions = choice(actions)
+
+                    # todo : condition here
+                    """
+                    # normalement cette actions ne doit jamais rester comme ça
+                    actions = [0, 1, 0]
+                    if headLikeT(): # uniquement un bloc devant enfaite (mur ou lui)
+                        pass
+                    elif cornerUpLR(): # 45 droite, 45 gauche ET RIEN QUE ÇA (3 choix)
+                        pass
+                    elif cornerUpRight(): # 45 droite et RIEN QUE ÇA (concernant la droite, peut pas y avoir de bloc à droite)
+                        pass
+                    elif cornerUpLeft(): # 45 gauche et RIEN QUE ÇA  (concernant la gauche, peut pas y avoir de bloc à gauche)
+                        pass"""
+                    if self.only3face():
+                        time.sleep(4)
+                    elif self.upRnoR(): # no block up too
+                        time.sleep(4)
+                    elif self.upLnoL(): # no block up too
+                        time.sleep(4)
+                    else: # il n'y a pas de danger de se faire enrouler
+                        obs = np.concatenate(([cos_food], [direction], walls))
+                        actions = self.snake.brain.think(obs)
+                        actions = choice(actions)
+
 
                     self.brain_action(actions)
 

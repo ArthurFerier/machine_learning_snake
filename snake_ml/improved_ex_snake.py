@@ -27,11 +27,11 @@ d_standard_dev = 0.025               # decrease of the amplitude for each genera
 init_moves = 100                # number of moves the snake can do, can increase with time?
 add_moves = 100                 # number of moves added when the snake eats food
 
-screen = False                   # see the screen or not
+screen = True                   # see the screen or not
 speed = 400000                       # speed in squares/s of the snake
 size = 17                      # size of the world
 
-loaded = True                 # if we want to evolve a saved snake
+loaded = False                 # if we want to evolve a saved snake
 file = "best_of_gen/best_of_gen0.npz"  # file to load the snake to evolve
 
 save = False
