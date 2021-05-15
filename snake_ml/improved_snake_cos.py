@@ -312,8 +312,164 @@ class SnakeGame(object):
         self.draw_text("Game over! Press Space to start a new game", (20, 150))
         self.draw_text("Your score is: {}".format(self.score), (140, 180))
 
+
+
+    def part_right(self, x, y): # are the coord (x,y) at the right of the head ?
+        x_head = self.snake.segments[0][0]
+        y_head = self.snake.segments[0][1]
+        if self.snake.direction == DIRECTION_UP:
+            if y_head == y and x_head == x - BLOCK_SIZE: # todo : vérif le bloc size
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_DOWN:
+            if y_head == y and x_head == x + BLOCK_SIZE:
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_RIGHT:
+            if x_head == x and y_head == y - BLOCK_SIZE:
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_LEFT:
+            if x_head == x and y_head == y + BLOCK_SIZE:
+                return True
+            else:
+                return False
+        else:
+            print("mon part right fonctionne pas")
+            return -1
+
+    def part_left(self, x, y): # are the coord (x,y) at the left of the head ?
+        x_head = self.snake.segments[0][0]
+        y_head = self.snake.segments[0][1]
+        if self.snake.direction == DIRECTION_UP:
+            if y_head == y and x_head == x + BLOCK_SIZE: # todo : vérif le bloc size
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_DOWN:
+            if y_head == y and x_head == x - BLOCK_SIZE:
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_RIGHT:
+            if x_head == x and y_head == y + BLOCK_SIZE:
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_LEFT:
+            if x_head == x and y_head == y - BLOCK_SIZE:
+                return True
+            else:
+                return False
+        else:
+            print("mon part left fonctionne pas")
+            return -1
+
+    def part_above(self, x, y):
+        x_head = self.snake.segments[0][0]
+        y_head = self.snake.segments[0][1]
+        if self.snake.direction == DIRECTION_UP:
+            if y_head == y + BLOCK_SIZE and x_head == x:  # todo : vérif le bloc size
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_DOWN:
+            if y_head == y - BLOCK_SIZE and x_head == x:
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_RIGHT:
+            if x_head == x - BLOCK_SIZE and y_head == y:
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_LEFT:
+            if x_head == x + BLOCK_SIZE and y_head == y:
+                return True
+            else:
+                return False
+        else:
+            print("mon part above fonctionne pas")
+            return -1
+
+    def part_above_right(self, x, y):
+        x_head = self.snake.segments[0][0]
+        y_head = self.snake.segments[0][1]
+        if self.snake.direction == DIRECTION_UP:
+            if y_head == y + BLOCK_SIZE and x_head == x - BLOCK_SIZE:  # todo : vérif le bloc size
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_DOWN:
+            if y_head == y - BLOCK_SIZE and x_head == x + BLOCK_SIZE:
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_RIGHT:
+            if x_head == x - BLOCK_SIZE and y_head == y - BLOCK_SIZE:
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_LEFT:
+            if x_head == x + BLOCK_SIZE and y_head == y + BLOCK_SIZE:
+                return True
+            else:
+                return False
+        else:
+            print("mon part above right fonctionne pas")
+            return -1
+
+    def part_above_left(self, x, y):
+        x_head = self.snake.segments[0][0]
+        y_head = self.snake.segments[0][1]
+        if self.snake.direction == DIRECTION_UP:
+            if y_head == y + BLOCK_SIZE and x_head == x + BLOCK_SIZE:  # todo : vérif le bloc size
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_DOWN:
+            if y_head == y - BLOCK_SIZE and x_head == x - BLOCK_SIZE:
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_RIGHT:
+            if x_head == x - BLOCK_SIZE and y_head == y - BLOCK_SIZE:
+                return True
+            else:
+                return False
+        elif self.snake.direction == DIRECTION_LEFT:
+            if x_head == x + BLOCK_SIZE and y_head == y - BLOCK_SIZE:
+                return True
+            else:
+                return False
+        else:
+            print("mon part above fonctionne pas")
+            return -1
+
     def only3face(self):
-        return 1
+        block_meeting_cond = False
+        x_head = self.snake.segments[0][0]
+        y_head = self.snake.segments[0][1]
+        for part in self.snake.segments:
+            # if block right
+            if self.part_right(part[0], part[1]):
+                return False
+            if self.part_left(part[0], part[1]):
+                return False
+            # si le block_meeting_cond est déjà true, ça sert à rien à refaire
+            if not block_meeting_cond:
+                if self.part_above(part[0], part[1]):
+                    block_meeting_cond = True
+                if self.part_above_right(part[0], part[1]):
+                    block_meeting_cond = True
+                if self.part_above_left(part[0], part[1]):
+                    block_meeting_cond = True
+
+        return block_meeting_cond
+
 
     def upRnoR(self):
         return 1
