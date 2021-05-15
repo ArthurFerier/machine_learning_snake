@@ -472,10 +472,36 @@ class SnakeGame(object):
 
 
     def upRnoR(self):
-        return 1
+        block_meeting_cond = False
+        x_head = self.snake.segments[0][0]
+        y_head = self.snake.segments[0][1]
+        for part in self.snake.segments:
+            # if block right
+            if self.part_right(part[0], part[1]):
+                return False
+            if self.part_above(part[0], part[1]):
+                return False
+            # si le block_meeting_cond est déjà true, ça sert à rien à refaire
+            if not block_meeting_cond:
+                if self.part_above_right(part[0], part[1]):
+                    block_meeting_cond = True
+
+        return block_meeting_cond
 
     def upLnoL(self):
-        return 1
+        block_meeting_cond = False
+        x_head = self.snake.segments[0][0]
+        y_head = self.snake.segments[0][1]
+        for part in self.snake.segments:
+            # if block right
+            if self.part_left(part[0], part[1]):
+                return False
+            if self.part_above(part[0], part[1]):
+                return False
+            # si le block_meeting_cond est déjà true, ça sert à rien à refaire
+            if not block_meeting_cond:
+                if self.part_above_left(part[0], part[1]):
+                    block_meeting_cond = True
 
     @property
     def play(self):
