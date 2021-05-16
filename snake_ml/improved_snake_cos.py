@@ -69,6 +69,7 @@ KEY_DIRECTION = {
     K_d: DIRECTION_RIGHT, K_RIGHT: DIRECTION_RIGHT,
 }
 
+time_passes = True
 
 class Snake(object):
     def __init__(self, start, start_length, pot_parents, scores_p, proportion, amplitude, batch, speed, loaded, struct):
@@ -233,6 +234,13 @@ class SnakeGame(object):
         """Process keyboard event e."""
         if e.key in KEY_DIRECTION:
             self.next_direction = KEY_DIRECTION[e.key]
+        if e.key == K_SPACE:
+            print("paused")
+            global time_passes
+            time_passes = not time_passes
+
+
+
 
 
     def brain_action(self, actions):
@@ -529,8 +537,9 @@ class SnakeGame(object):
                 self.moves = self.save_moves
 
             if self.playing:
-                self.update(dt)
-                tik -= dt
+                if time_passes:
+                    self.update(dt)
+                    tik -= dt
 
                 if tik < 0:
                     tik += 1 / self.snake.speed
