@@ -505,6 +505,57 @@ class SnakeGame(object):
                 if self.part_above_left(part[0], part[1]):
                     block_meeting_cond = True
 
+    def choose_direction(self):
+        # action[0] = 1 : next left
+        # action[1] = 1 : next middle
+        # action[2] = 1 : next right
+        action = [0, 0, 0]
+
+        # determining the blocs left, above and right of the head
+        x_right = 0
+        y_right = 0
+        x_left = 0
+        y_left = 0
+        x_above = 0
+        y_above = 0
+        x_head = self.snake.segments[0][0]
+        y_head = self.snake.segments[0][1]
+        if self.snake.direction == DIRECTION_UP:
+            x_right = x_head + 1
+            y_right = y_head
+            x_left = x_head - 1
+            y_left = y_head
+            x_above = x_head
+            y_above = y_head - 1
+        elif self.snake.direction == DIRECTION_DOWN:
+            x_right = x_head - 1
+            y_right = y_head
+            x_left = x_head + 1
+            y_left = y_head
+            x_above = x_head
+            y_above = y_head + 1
+        elif self.snake.direction == DIRECTION_RIGHT:
+            x_right = x_head
+            y_right = y_head + 1
+            x_left = x_head
+            y_left = y_head - 1
+            x_above = x_head + 1
+            y_above = y_head
+        elif self.snake.direction == DIRECTION_LEFT:
+            x_right = x_head
+            y_right = y_head - 1
+            x_left = x_head
+            y_left = y_head + 1
+            x_above = x_head - 1
+            y_above = y_head
+
+        count_left = breadth_count(x_left, y_left)
+        count_above = breadth_count(x_above, y_above)
+        count_right = breadth_count(x_right, y_right)
+
+        return [count_left, count_above, count_right]
+
+
     @property
     def play(self):
         global time_passes
@@ -673,27 +724,20 @@ class SnakeGame(object):
                     if self.only3face():
                         print("on est dans la cond 3 en face")
                         time_passes = not time_passes
-                        obs = np.concatenate(([cos_food], [direction], walls))
-                        actions = self.snake.brain.think(obs)
-                        actions = choice(actions)
+                        actions = self.choose_direction()
                     elif self.upRnoR(): # no block up too
                         print("on est dans la cond un en haut à droite")
                         time_passes = not time_passes
-                        obs = np.concatenate(([cos_food], [direction], walls))
-                        actions = self.snake.brain.think(obs)
-                        actions = choice(actions)
+                        actions = self.choose_direction()
                     elif self.upLnoL(): # no block up too
                         print("on est dans la cond un en haut à gauche")
                         time_passes = not time_passes
-                        obs = np.concatenate(([cos_food], [direction], walls))
-                        actions = self.snake.brain.think(obs)
-                        actions = choice(actions)
+                        actions = self.choose_direction()
                     else: # il n'y a pas de danger de se faire enrouler
                         obs = np.concatenate(([cos_food], [direction], walls))
                         actions = self.snake.brain.think(obs)
-                        actions = choice(actions)
 
-
+                    actions = choice(actions)
                     self.brain_action(actions)
 
                 if self.see:
