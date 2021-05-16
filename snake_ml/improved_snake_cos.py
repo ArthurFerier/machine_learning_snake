@@ -507,6 +507,7 @@ class SnakeGame(object):
 
     @property
     def play(self):
+        global time_passes
         """Play game until the QUIT event is received."""
         eval = 1
         tik = 1 / self.snake.speed
@@ -671,13 +672,22 @@ class SnakeGame(object):
                         pass"""
                     if self.only3face():
                         print("on est dans la cond 3 en face")
-                        time.sleep(4)
+                        time_passes = not time_passes
+                        obs = np.concatenate(([cos_food], [direction], walls))
+                        actions = self.snake.brain.think(obs)
+                        actions = choice(actions)
                     elif self.upRnoR(): # no block up too
                         print("on est dans la cond un en haut à droite")
-                        time.sleep(4)
+                        time_passes = not time_passes
+                        obs = np.concatenate(([cos_food], [direction], walls))
+                        actions = self.snake.brain.think(obs)
+                        actions = choice(actions)
                     elif self.upLnoL(): # no block up too
                         print("on est dans la cond un en haut à gauche")
-                        time.sleep(4)
+                        time_passes = not time_passes
+                        obs = np.concatenate(([cos_food], [direction], walls))
+                        actions = self.snake.brain.think(obs)
+                        actions = choice(actions)
                     else: # il n'y a pas de danger de se faire enrouler
                         obs = np.concatenate(([cos_food], [direction], walls))
                         actions = self.snake.brain.think(obs)
