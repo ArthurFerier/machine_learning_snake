@@ -318,22 +318,22 @@ class SnakeGame(object):
         x_head = self.snake.segments[0][0]
         y_head = self.snake.segments[0][1]
         if self.snake.direction == DIRECTION_UP:
-            if y_head == y and x_head == x - BLOCK_SIZE: # todo : vérif le bloc size
+            if y_head == y and x_head == x - 1: # todo : vérif le bloc size
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_DOWN:
-            if y_head == y and x_head == x + BLOCK_SIZE:
+            if y_head == y and x_head == x + 1:
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_RIGHT:
-            if x_head == x and y_head == y - BLOCK_SIZE:
+            if x_head == x and y_head == y - 1:
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_LEFT:
-            if x_head == x and y_head == y + BLOCK_SIZE:
+            if x_head == x and y_head == y + 1:
                 return True
             else:
                 return False
@@ -345,22 +345,22 @@ class SnakeGame(object):
         x_head = self.snake.segments[0][0]
         y_head = self.snake.segments[0][1]
         if self.snake.direction == DIRECTION_UP:
-            if y_head == y and x_head == x + BLOCK_SIZE: # todo : vérif le bloc size
+            if y_head == y and x_head == x + 1: # todo : vérif le bloc size
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_DOWN:
-            if y_head == y and x_head == x - BLOCK_SIZE:
+            if y_head == y and x_head == x - 1:
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_RIGHT:
-            if x_head == x and y_head == y + BLOCK_SIZE:
+            if x_head == x and y_head == y + 1:
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_LEFT:
-            if x_head == x and y_head == y - BLOCK_SIZE:
+            if x_head == x and y_head == y - 1:
                 return True
             else:
                 return False
@@ -372,22 +372,22 @@ class SnakeGame(object):
         x_head = self.snake.segments[0][0]
         y_head = self.snake.segments[0][1]
         if self.snake.direction == DIRECTION_UP:
-            if y_head == y + BLOCK_SIZE and x_head == x:  # todo : vérif le bloc size
+            if y_head == y + 1 and x_head == x:  # todo : vérif le bloc size
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_DOWN:
-            if y_head == y - BLOCK_SIZE and x_head == x:
+            if y_head == y - 1 and x_head == x:
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_RIGHT:
-            if x_head == x - BLOCK_SIZE and y_head == y:
+            if x_head == x - 1 and y_head == y:
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_LEFT:
-            if x_head == x + BLOCK_SIZE and y_head == y:
+            if x_head == x + 1 and y_head == y:
                 return True
             else:
                 return False
@@ -399,22 +399,22 @@ class SnakeGame(object):
         x_head = self.snake.segments[0][0]
         y_head = self.snake.segments[0][1]
         if self.snake.direction == DIRECTION_UP:
-            if y_head == y + BLOCK_SIZE and x_head == x - BLOCK_SIZE:  # todo : vérif le bloc size
+            if y_head == y + 1 and x_head == x - 1:  # todo : vérif le bloc size
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_DOWN:
-            if y_head == y - BLOCK_SIZE and x_head == x + BLOCK_SIZE:
+            if y_head == y - 1 and x_head == x + 1:
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_RIGHT:
-            if x_head == x - BLOCK_SIZE and y_head == y - BLOCK_SIZE:
+            if x_head == x - 1 and y_head == y - 1:
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_LEFT:
-            if x_head == x + BLOCK_SIZE and y_head == y + BLOCK_SIZE:
+            if x_head == x + 1 and y_head == y + 1:
                 return True
             else:
                 return False
@@ -426,22 +426,22 @@ class SnakeGame(object):
         x_head = self.snake.segments[0][0]
         y_head = self.snake.segments[0][1]
         if self.snake.direction == DIRECTION_UP:
-            if y_head == y + BLOCK_SIZE and x_head == x + BLOCK_SIZE:  # todo : vérif le bloc size
+            if y_head == y + 1 and x_head == x + 1:  # todo : vérif le bloc size
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_DOWN:
-            if y_head == y - BLOCK_SIZE and x_head == x - BLOCK_SIZE:
+            if y_head == y - 1 and x_head == x - 1:
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_RIGHT:
-            if x_head == x - BLOCK_SIZE and y_head == y - BLOCK_SIZE:
+            if x_head == x - 1 and y_head == y - 1:
                 return True
             else:
                 return False
         elif self.snake.direction == DIRECTION_LEFT:
-            if x_head == x + BLOCK_SIZE and y_head == y - BLOCK_SIZE:
+            if x_head == x + 1 and y_head == y - 1:
                 return True
             else:
                 return False
@@ -451,8 +451,6 @@ class SnakeGame(object):
 
     def only3face(self):
         block_meeting_cond = False
-        x_head = self.snake.segments[0][0]
-        y_head = self.snake.segments[0][1]
         for part in self.snake.segments:
             # if block right
             if self.part_right(part[0], part[1]):
@@ -473,8 +471,6 @@ class SnakeGame(object):
 
     def upRnoR(self):
         block_meeting_cond = False
-        x_head = self.snake.segments[0][0]
-        y_head = self.snake.segments[0][1]
         for part in self.snake.segments:
             # if block right
             if self.part_right(part[0], part[1]):
@@ -490,8 +486,6 @@ class SnakeGame(object):
 
     def upLnoL(self):
         block_meeting_cond = False
-        x_head = self.snake.segments[0][0]
-        y_head = self.snake.segments[0][1]
         for part in self.snake.segments:
             # if block right
             if self.part_left(part[0], part[1]):
@@ -667,10 +661,13 @@ class SnakeGame(object):
                     elif cornerUpLeft(): # 45 gauche et RIEN QUE ÇA  (concernant la gauche, peut pas y avoir de bloc à gauche)
                         pass"""
                     if self.only3face():
+                        print("on est dans la cond 3 en face")
                         time.sleep(4)
                     elif self.upRnoR(): # no block up too
+                        print("on est dans la cond un en haut à droite")
                         time.sleep(4)
                     elif self.upLnoL(): # no block up too
+                        print("on est dans la cond un en haut à gauche")
                         time.sleep(4)
                     else: # il n'y a pas de danger de se faire enrouler
                         obs = np.concatenate(([cos_food], [direction], walls))
