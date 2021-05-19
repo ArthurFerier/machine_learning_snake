@@ -1,5 +1,7 @@
 # on fait les modifs ici pour le machine learning
 from collections import deque
+
+import numpy as np
 import pygame
 from random import randrange
 from pygame.locals import *
@@ -70,6 +72,9 @@ KEY_DIRECTION = {
 }
 
 time_passes = True
+free_block_above = []
+free_block_left = []
+free_block_right = []
 
 class Snake(object):
     def __init__(self, start, start_length, pot_parents, scores_p, proportion, amplitude, batch, speed, loaded, struct):
@@ -184,6 +189,7 @@ class SnakeGame(object):
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font('freesansbold.ttf', 20)
         self.world = Rect((0, 0), Vector((size, size)))
+        self.size = size
         self.reset(parents, scores_p, proportion, amplitude, 0, speed, loaded, structure, same=False)
         self.moves = moves
         self.add_moves = add_moves
@@ -463,6 +469,7 @@ class SnakeGame(object):
             # if block right
             if self.part_right(part[0], part[1]):
                 return False
+            # if block left
             if self.part_left(part[0], part[1]):
                 return False
             # si le block_meeting_cond est déjà true, ça sert à rien à refaire
@@ -483,6 +490,7 @@ class SnakeGame(object):
             # if block right
             if self.part_right(part[0], part[1]):
                 return False
+            # if block above
             if self.part_above(part[0], part[1]):
                 return False
             # si le block_meeting_cond est déjà true, ça sert à rien à refaire
@@ -504,6 +512,48 @@ class SnakeGame(object):
             if not block_meeting_cond:
                 if self.part_above_left(part[0], part[1]):
                     block_meeting_cond = True
+
+    def breadth_countL(self, x_dep, y_dep):
+        global free_block_left
+        if not free_block_left[y_dep+1][x_dep+1]:
+            return 0
+
+        free_block_left[y_dep+1][x_dep+1] = False
+        count_above = self.breadth_countL(x_dep, y_dep-1)
+        count_down = self.breadth_countL(x_dep, y_dep+1)
+        count_right = self.breadth_countL(x_dep+1, y_dep)
+        count_left = self.breadth_countL(x_dep-1, y_dep)
+
+
+        return 1 + count_above + count_down + count_left + count_right
+
+    def breadth_countA(self, x_dep, y_dep):
+        global free_block_above
+        if not free_block_above[y_dep+1][x_dep+1]:
+            return 0
+
+        free_block_left[y_dep+1][x_dep+1] = False
+        count_above = self.breadth_countL(x_dep, y_dep-1)
+        count_down = self.breadth_countL(x_dep, y_dep+1)
+        count_right = self.breadth_countL(x_dep+1, y_dep)
+        count_left = self.breadth_countL(x_dep-1, y_dep)
+
+
+        return 1 + count_above + count_down + count_left + count_right
+
+    def breadth_countR(self, x_dep, y_dep):
+        global free_block_right
+        if not free_block_right[y_dep+1][x_dep+1]:
+            return 0
+
+        free_block_left[y_dep+1][x_dep+1 ] = False
+        count_above = self.breadth_countL(x_dep, y_dep-1)
+        count_down = self.breadth_countL(x_dep, y_dep+1)
+        count_right = self.breadth_countL(x_dep+1, y_dep)
+        count_left = self.breadth_countL(x_dep-1, y_dep)
+
+
+        return 1 + count_above + count_down + count_left + count_right
 
     def choose_direction(self):
         # action[0] = 1 : next left
@@ -549,9 +599,39 @@ class SnakeGame(object):
             x_above = x_head - 1
             y_above = y_head
 
-        count_left = breadth_count(x_left, y_left)
-        count_above = breadth_count(x_above, y_above)
-        count_right = breadth_count(x_right, y_right)
+        # todo : implémenter 3 matrices globale avec tous les points qui appartiennent au snake
+        # ainsi que les murs => pour voir si on bute ou pas, ainsi que les points qu'on a
+        # déjà visité
+        global free_block_right
+        free_block_right = np.ones((self.size+2, self.size+2), dtype=bool)
+        # setting the walse
+        for i in range(len(free_block_right[0])):
+            free_block_right[0][i] = False
+            free_block_right[-1][i] = False
+            free_block_right[i][0] = False
+            free_block_right[i][-1] = False
+        # setting the snake blocks
+        for part in self.snake.segments:
+            free_block_right[part[1]+1][part[0]+1] = False
+        global free_block_above
+        free_block_above = np.copy(free_block_right)
+        global free_block_left
+        free_block_left = np.copy(free_block_right)
+
+
+
+        print("left : ({}, {})".format(x_left, y_left))
+        print("right : ({}, {})".format(x_right, y_right))
+        print("above : ({}, {})".format(x_above, y_above))
+        print(free_block_left[y_left][x_left])
+        print(free_block_right[y_right][x_right])
+        print(free_block_above[y_above][x_above])
+        count_left = self.breadth_countL(x_left, y_left)
+        count_above = self.breadth_countA(x_above, y_above)
+        count_right = self.breadth_countR(x_right, y_right)
+        print("block counted right : {}".format(count_right))
+        print("block counted left : {}".format(count_left))
+        print("block counted above : {}".format(count_above))
 
         return [count_left, count_above, count_right]
 
@@ -709,27 +789,16 @@ class SnakeGame(object):
                             walls = walls[3:]
 
 
-                    # todo : condition here
-                    """
-                    # normalement cette actions ne doit jamais rester comme ça
-                    actions = [0, 1, 0]
-                    if headLikeT(): # uniquement un bloc devant enfaite (mur ou lui)
-                        pass
-                    elif cornerUpLR(): # 45 droite, 45 gauche ET RIEN QUE ÇA (3 choix)
-                        pass
-                    elif cornerUpRight(): # 45 droite et RIEN QUE ÇA (concernant la droite, peut pas y avoir de bloc à droite)
-                        pass
-                    elif cornerUpLeft(): # 45 gauche et RIEN QUE ÇA  (concernant la gauche, peut pas y avoir de bloc à gauche)
-                        pass"""
                     if self.only3face():
                         print("on est dans la cond 3 en face")
                         time_passes = not time_passes
                         actions = self.choose_direction()
-                    elif self.upRnoR(): # no block up too
+
+                    elif self.upRnoR(): # no block up too # todo : vérifier condition ; n'a pas l'air de fonctionner
                         print("on est dans la cond un en haut à droite")
                         time_passes = not time_passes
                         actions = self.choose_direction()
-                    elif self.upLnoL(): # no block up too
+                    elif self.upLnoL(): # no block up too # todo : vérifier condition ; n'a pas l'air de fonctionner
                         print("on est dans la cond un en haut à gauche")
                         time_passes = not time_passes
                         actions = self.choose_direction()
