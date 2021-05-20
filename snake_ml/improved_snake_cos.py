@@ -479,6 +479,19 @@ class SnakeGame(object):
                     block_meeting_cond = True
                 if self.part_above_left(part[0], part[1]):
                     block_meeting_cond = True
+        # wall can count for block_meeting_cond too
+        # right wall :
+        if self.snake.segments[0][0] == self.size - 1:
+            block_meeting_cond = True
+        # left wall :
+        if self.snake.segments[0][0] == 0:
+            block_meeting_cond = True
+        # above wall :
+        if self.snake.segments[0][1] == 0:
+            block_meeting_cond = True
+        # under wall :
+        if self.snake.segments[0][1] == self.size - 1:
+            block_meeting_cond = True
 
         return block_meeting_cond
 
@@ -780,23 +793,23 @@ class SnakeGame(object):
                                 mr = 1  # middle_right 8
 
                             walls = np.array([ur, um, ul, ml, al, am, ar, mr])
-                            # implem mur
-                            # mur de droite :
+                            # implem wall
+                            # right wall :
                             if self.snake.segments[0][0] == self.size - 1:
                                 walls[0] = 1
                                 walls[6] = 1
                                 walls[7] = 1
-                            # mur de gauche :
+                            # left wall :
                             if self.snake.segments[0][0] == 0:
                                 walls[2] = 1
                                 walls[3] = 1
                                 walls[4] = 1
-                            # mur du haut :
+                            # above wall :
                             if self.snake.segments[0][1] == 0:
                                 walls[4] = 1
                                 walls[5] = 1
                                 walls[6] = 1
-                            # mur du bas
+                            # under wall :
                             if self.snake.segments[0][1] == self.size - 1:
                                 walls[0] = 1
                                 walls[1] = 1
