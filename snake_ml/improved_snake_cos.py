@@ -88,7 +88,6 @@ class Snake(object):
             self.brain = MLNeuralNetwork(pot_parents)
             self.brain.mutate(proportion, amplitude)
         elif type(pot_parents) == str and not loaded:
-            print("on passe bien sans modif le brain")
             self.brain = MLNeuralNetwork(pot_parents)
         elif type(pot_parents) == MLNeuralNetwork:
             self.brain = pot_parents
@@ -450,7 +449,7 @@ class SnakeGame(object):
             else:
                 return False
         elif self.snake.direction == DIRECTION_RIGHT:
-            if x_head == x - 1 and y_head == y - 1:
+            if x_head == x - 1 and y_head == y + 1:
                 return True
             else:
                 return False
@@ -503,7 +502,7 @@ class SnakeGame(object):
     def upLnoL(self):
         block_meeting_cond = False
         for part in self.snake.segments:
-            # if block right
+            # if block left
             if self.part_left(part[0], part[1]):
                 return False
             if self.part_above(part[0], part[1]):
@@ -512,6 +511,7 @@ class SnakeGame(object):
             if not block_meeting_cond:
                 if self.part_above_left(part[0], part[1]):
                     block_meeting_cond = True
+        return block_meeting_cond
 
     def breadth_countL(self, x_dep, y_dep):
         global free_block_left
@@ -532,7 +532,7 @@ class SnakeGame(object):
         if not free_block_above[y_dep+1][x_dep+1]:
             return 0
 
-        free_block_left[y_dep+1][x_dep+1] = False
+        free_block_above[y_dep+1][x_dep+1] = False
         count_above = self.breadth_countL(x_dep, y_dep-1)
         count_down = self.breadth_countL(x_dep, y_dep+1)
         count_right = self.breadth_countL(x_dep+1, y_dep)
@@ -546,7 +546,7 @@ class SnakeGame(object):
         if not free_block_right[y_dep+1][x_dep+1]:
             return 0
 
-        free_block_left[y_dep+1][x_dep+1 ] = False
+        free_block_right[y_dep+1][x_dep+1 ] = False
         count_above = self.breadth_countL(x_dep, y_dep-1)
         count_down = self.breadth_countL(x_dep, y_dep+1)
         count_right = self.breadth_countL(x_dep+1, y_dep)
@@ -613,25 +613,27 @@ class SnakeGame(object):
         # setting the snake blocks
         for part in self.snake.segments:
             free_block_right[part[1]+1][part[0]+1] = False
+        #don't care about the last segment
+        #free_block_right[self.snake.segments[-1][1]+1][self.snake.segments[-1][0]+1] = True
         global free_block_above
         free_block_above = np.copy(free_block_right)
         global free_block_left
         free_block_left = np.copy(free_block_right)
 
 
-
-        print("left : ({}, {})".format(x_left, y_left))
-        print("right : ({}, {})".format(x_right, y_right))
-        print("above : ({}, {})".format(x_above, y_above))
-        print(free_block_left[y_left][x_left])
-        print(free_block_right[y_right][x_right])
-        print(free_block_above[y_above][x_above])
         count_left = self.breadth_countL(x_left, y_left)
         count_above = self.breadth_countA(x_above, y_above)
         count_right = self.breadth_countR(x_right, y_right)
-        print("block counted right : {}".format(count_right))
+        print("left")
+        print(free_block_left)
+        print("above")
+        print(free_block_above)
+        print("right")
+        print(free_block_right)
+
         print("block counted left : {}".format(count_left))
         print("block counted above : {}".format(count_above))
+        print("block counted right : {}".format(count_right))
 
         return [count_left, count_above, count_right]
 
@@ -786,6 +788,7 @@ class SnakeGame(object):
 
                             elif self.snake.direction == DIRECTION_LEFT:
                                 walls = np.concatenate((walls[6:], walls[:-2]))
+                            # on prend pas les 3 premiers elements du walls
                             walls = walls[3:]
 
 
