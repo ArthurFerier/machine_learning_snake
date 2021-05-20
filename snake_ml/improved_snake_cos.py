@@ -780,6 +780,29 @@ class SnakeGame(object):
                                 mr = 1  # middle_right 8
 
                             walls = np.array([ur, um, ul, ml, al, am, ar, mr])
+                            # implem mur
+                            # mur de droite :
+                            if self.snake.segments[0][0] == self.size - 1:
+                                walls[0] = 1
+                                walls[6] = 1
+                                walls[7] = 1
+                            # mur de gauche :
+                            if self.snake.segments[0][0] == 0:
+                                walls[2] = 1
+                                walls[3] = 1
+                                walls[4] = 1
+                            # mur du haut :
+                            if self.snake.segments[0][1] == 0:
+                                walls[4] = 1
+                                walls[5] = 1
+                                walls[6] = 1
+                            # mur du bas
+                            if self.snake.segments[0][1] == self.size - 1:
+                                walls[0] = 1
+                                walls[1] = 1
+                                walls[2] = 1
+
+
                             if self.snake.direction == DIRECTION_RIGHT:
                                 walls = np.concatenate((walls[2:], walls[:2]))
 
@@ -789,6 +812,7 @@ class SnakeGame(object):
                             elif self.snake.direction == DIRECTION_LEFT:
                                 walls = np.concatenate((walls[6:], walls[:-2]))
                             # on prend pas les 3 premiers elements du walls
+                            # en clair on prend que les 5 éléments devant le snake
                             walls = walls[3:]
 
 
