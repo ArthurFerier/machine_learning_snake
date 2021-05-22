@@ -823,7 +823,7 @@ class SnakeGame(object):
 
 
                     if self.only3face():
-                        print("on est dans la cond 3 en face")
+                        #print("on est dans la cond 3 en face")
                         # time_passes = not time_passes
                         actions = self.choose_direction()
 
