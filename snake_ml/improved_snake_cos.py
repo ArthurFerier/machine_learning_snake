@@ -249,8 +249,6 @@ class SnakeGame(object):
 
 
     def brain_action(self, actions):
-        # print(actions)
-
         if actions[0] == 1:
             self.next_direction = "left"
 
@@ -331,7 +329,7 @@ class SnakeGame(object):
         x_head = self.snake.segments[0][0]
         y_head = self.snake.segments[0][1]
         if self.snake.direction == DIRECTION_UP:
-            if y_head == y and x_head == x - 1: # todo : vérif le bloc size
+            if y_head == y and x_head == x - 1:
                 return True
             else:
                 return False
@@ -358,7 +356,7 @@ class SnakeGame(object):
         x_head = self.snake.segments[0][0]
         y_head = self.snake.segments[0][1]
         if self.snake.direction == DIRECTION_UP:
-            if y_head == y and x_head == x + 1: # todo : vérif le bloc size
+            if y_head == y and x_head == x + 1:
                 return True
             else:
                 return False
@@ -385,7 +383,7 @@ class SnakeGame(object):
         x_head = self.snake.segments[0][0]
         y_head = self.snake.segments[0][1]
         if self.snake.direction == DIRECTION_UP:
-            if y_head == y + 1 and x_head == x:  # todo : vérif le bloc size
+            if y_head == y + 1 and x_head == x:
                 return True
             else:
                 return False
@@ -412,7 +410,7 @@ class SnakeGame(object):
         x_head = self.snake.segments[0][0]
         y_head = self.snake.segments[0][1]
         if self.snake.direction == DIRECTION_UP:
-            if y_head == y + 1 and x_head == x - 1:  # todo : vérif le bloc size
+            if y_head == y + 1 and x_head == x - 1:
                 return True
             else:
                 return False
@@ -439,7 +437,7 @@ class SnakeGame(object):
         x_head = self.snake.segments[0][0]
         y_head = self.snake.segments[0][1]
         if self.snake.direction == DIRECTION_UP:
-            if y_head == y + 1 and x_head == x + 1:  # todo : vérif le bloc size
+            if y_head == y + 1 and x_head == x + 1:
                 return True
             else:
                 return False
@@ -620,9 +618,6 @@ class SnakeGame(object):
             x_above = x_head - 1
             y_above = y_head
 
-        # todo : implémenter 3 matrices globale avec tous les points qui appartiennent au snake
-        # ainsi que les murs => pour voir si on bute ou pas, ainsi que les points qu'on a
-        # déjà visité
         global free_block_right
         free_block_right = np.ones((self.size+2, self.size+2), dtype=bool)
         # setting the walse
@@ -829,7 +824,7 @@ class SnakeGame(object):
 
                     if self.only3face():
                         print("on est dans la cond 3 en face")
-                        time_passes = not time_passes
+                        # time_passes = not time_passes
                         actions = self.choose_direction()
 
                         # let the brain choose if equality
@@ -841,6 +836,7 @@ class SnakeGame(object):
 
                         # count left & right same and bigger than count above
                         if actions[0] == actions[2] and actions[0] > actions[1]:
+                            # todo : changer cette cond si on réentraine le snake
                             print("tourne à droite sinon t'es foutu")
                             actions = [0, 0, 1]
 
@@ -851,49 +847,49 @@ class SnakeGame(object):
                             actions = self.snake.brain.think(obs)
 
                     elif self.upRnoR(): # no block up too # todo : vérifier condition ; n'a pas l'air de fonctionner
-                        print("on est dans la cond un en haut à droite")
+                        # print("on est dans la cond un en haut à droite")
                         time_passes = not time_passes
                         actions = self.choose_direction()
 
                         # let the brain choose if equality
                         # count left & above same and bigger than right
                         if actions[0] == actions[1] and actions[0] > actions[2]:
-                            print("the brain is choosing")
+                            # print("the brain is choosing")
                             obs = np.concatenate(([cos_food], [direction], walls))
                             actions = self.snake.brain.think(obs)
 
                         # count left & right same and bigger than count above
                         if actions[0] == actions[2] and actions[0] > actions[1]:
-                            print("the brain is choosing")
+                            # print("the brain is choosing")
                             obs = np.concatenate(([cos_food], [direction], walls))
                             actions = self.snake.brain.think(obs)
 
                         # count right & above same and bigger than left
                         if actions[1] == actions[2] and actions[1] > actions[0]:
-                            print("the brain is choosing")
+                            # print("the brain is choosing")
                             obs = np.concatenate(([cos_food], [direction], walls))
                             actions = self.snake.brain.think(obs)
                     elif self.upLnoL(): # no block up too # todo : vérifier condition ; n'a pas l'air de fonctionner
-                        print("on est dans la cond un en haut à gauche")
+                        # print("on est dans la cond un en haut à gauche")
                         time_passes = not time_passes
                         actions = self.choose_direction()
 
                         # let the brain choose if equality
                         # count left & above same and bigger than right
                         if actions[0] == actions[1] and actions[0] > actions[2]:
-                            print("the brain is choosing")
+                            # print("the brain is choosing")
                             obs = np.concatenate(([cos_food], [direction], walls))
                             actions = self.snake.brain.think(obs)
 
                         # count left & right same and bigger than count above
                         if actions[0] == actions[2] and actions[0] > actions[1]:
-                            print("the brain is choosing")
+                            # print("the brain is choosing")
                             obs = np.concatenate(([cos_food], [direction], walls))
                             actions = self.snake.brain.think(obs)
 
                         # count right & above same and bigger than left
                         if actions[1] == actions[2] and actions[1] > actions[0]:
-                            print("the brain is choosing")
+                            # print("the brain is choosing")
                             obs = np.concatenate(([cos_food], [direction], walls))
                             actions = self.snake.brain.think(obs)
                     else: # il n'y a pas de danger de se faire enrouler
