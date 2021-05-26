@@ -1,7 +1,7 @@
 # on fait les modifs ici pour le machine learning
 from collections import deque
 
-import numpy as np
+# import numpy as np
 import pygame
 from random import randrange
 from pygame.locals import *
@@ -72,6 +72,7 @@ KEY_DIRECTION = {
 }
 
 time_passes = True
+tik = 1
 free_block_above = []
 free_block_left = []
 free_block_right = []
@@ -169,6 +170,7 @@ class Snake(object):
         """Grow snake by one segment and speed up."""
         self.growth_pending += 1
         self.speed += SNAKE_SPEED_INCREMENT
+        self.speed = 20
 
     def self_intersecting(self):
         """Is the snake currently self-intersecting?"""
@@ -234,7 +236,14 @@ class SnakeGame(object):
         while not (self.food and randrange(4)):
             global food
             food = Vector(map(randrange, self.world.bottomright))
-            if food not in self.food and food not in self.snake and food[0] != self.world.center[0]:
+            # todo : remettre la proba que la food soit contre un mur pour le training
+            if food not in self.food \
+                    and food not in self.snake \
+                    and food[0] != self.world.center[0]\
+                    and food[0] != 0 \
+                    and food[0] != self.size - 1 \
+                    and food[1] != 0 \
+                    and food[1] != self.size - 1:
                 self.food.add(food)
                 break  # comme ça il en crée pas plusieurs ce con
 
@@ -246,10 +255,6 @@ class SnakeGame(object):
             print("paused")
             global time_passes
             time_passes = not time_passes
-
-
-
-
 
     def brain_action(self, actions):
         if actions[0] == 1:
@@ -325,7 +330,9 @@ class SnakeGame(object):
 
         switch = True
         first = True
+        # we do arrive in the drawing sonar but nothin happens
         snake_length = len(self.snake)
+        # i can print this rectangle
         for p in self.snake:
             pygame.draw.rect(self.screen, SNAKE_COLOR3, self.block(p))
             SNAKE_COLOR3[0] -= int(255/snake_length)
@@ -348,6 +355,30 @@ class SnakeGame(object):
         self.draw_text("generation: {}".format(self.generation), (20, 40))
         self.draw_text("batch: {}".format(self.batch), (20, 60))
         self.draw_text("essai {} of brain".format(eval), (20, 80))
+
+        # drawing the fun part
+
+        # nothing is drawed below here ......
+        # array of the brightness of the yellow
+        n_brightnesses = int((len(cubes_diff_light)+1)/2) # ex = len 5 => 3 differents brightnesses
+        adding_brightness = int(180 / n_brightnesses)
+        brightnesses = np.empty(len(cubes_diff_light))
+        for i in range(n_brightnesses):
+            brightnesses[i] = (i+1)*adding_brightness
+        for i in range(n_brightnesses-1):
+            brightnesses[n_brightnesses+i] = adding_brightness*n_brightnesses - (i+1)*adding_brightness
+
+        # funzzz
+        for i in range(len(cubes_diff_light)):
+            for blocks in cubes_diff_light[i]:
+                # p serait des coordonnées => oui : blocks = (x, y)
+                pygame.draw.rect(self.screen, (int(brightnesses[i]), int(brightnesses[i]), 0),
+                                 Rect((blocks[0]*self.block_size, blocks[1]*self.block_size),
+                                       DIRECTION_DR * self.block_size))
+
+        pygame.display.flip()
+
+
 
 
     def draw_death(self):
@@ -646,15 +677,25 @@ class SnakeGame(object):
         global free_block_left
         global free_block_right
 
-        cubes_to_light = True
-        cubes_diff_light = np.array([[], [], [], [], []]) #
+        n_tones = 9 # must always be an odd number
+        cubes_diff_light = []
+        for i in range(n_tones):
+            cubes_diff_light.append([])
+        cubes_diff_light = np.array(cubes_diff_light)
+
         x_head = self.snake.segments[0][0]
         y_head = self.snake.segments[0][1]
         zeros = [(x_head, y_head)]
         new_zeros = self.make_0_from_0(zeros)
-        while(cubes_to_light):
-            cubes_diff_light = np.array([new_zeros, cubes_diff_light[:4]])
+        cubes_to_light = True
+        while cubes_to_light:
+            new_cubes_diff = [new_zeros]
+            for i in range(n_tones-1):
+                new_cubes_diff.append(cubes_diff_light[i])
+            cubes_diff_light = np.array(new_cubes_diff, dtype=object)
+
             self.draw_sonar(self.n_eval, cubes_diff_light)
+            time.sleep(0.03)
             new_zeros = self.make_0_from_0(new_zeros)
             if len(cubes_diff_light[0]) == 0 \
                     and len(cubes_diff_light[1]) == 0 \
@@ -662,6 +703,7 @@ class SnakeGame(object):
                     and len(cubes_diff_light[3]) == 0 \
                     and len(cubes_diff_light[4]) == 0:
                 cubes_to_light = False
+
 
 
     def choose_direction(self):
@@ -753,11 +795,18 @@ class SnakeGame(object):
     @property
     def play(self):
         global time_passes
+        global tik
         """Play game until the QUIT event is received."""
         eval = 1
         tik = 1 / self.snake.speed
+        just_choosed_direction = True
         while True:
-            dt = self.clock.tick(FPS) / 1000.0  # convert to seconds
+            if just_choosed_direction:
+                dt = self.clock.tick(FPS) / 1000.0
+                dt = 0.016
+                just_choosed_direction = False
+            else :
+                dt = self.clock.tick(FPS) / 1000.0  # convert to seconds => number of seconds since last clocktick
 
             for e in pygame.event.get():
                 if e.type == QUIT:
@@ -930,9 +979,8 @@ class SnakeGame(object):
 
                     if self.only3face():
                         # print("on est dans la cond 3 en face")
-                        time_passes = not time_passes
                         actions = self.choose_direction()
-                        time_passes = not time_passes
+                        just_choosed_direction = True
 
                         # let the brain choose if equality
                         # count left & above same and bigger than right
@@ -955,9 +1003,8 @@ class SnakeGame(object):
 
                     elif self.upRnoR(): # no block up too
                         # print("on est dans la cond un en haut à droite")
-                        time_passes = not time_passes
                         actions = self.choose_direction()
-                        time_passes = not time_passes
+                        just_choosed_direction = True
 
                         # let the brain choose if equality
                         # count left & above same and bigger than right
@@ -979,9 +1026,8 @@ class SnakeGame(object):
                             actions = self.snake.brain.think(obs)
                     elif self.upLnoL(): # no block up too
                         # print("on est dans la cond un en haut à gauche")
-                        time_passes = not time_passes
                         actions = self.choose_direction()
-                        time_passes = not time_passes
+                        just_choosed_direction = True
 
                         # let the brain choose if equality
                         # count left & above same and bigger than right
@@ -1004,6 +1050,7 @@ class SnakeGame(object):
                     else: # il n'y a pas de danger de se faire enrouler
                         obs = np.concatenate(([cos_food], [direction], walls))
                         actions = self.snake.brain.think(obs)
+
 
                     actions = choice(actions)
                     self.brain_action(actions)

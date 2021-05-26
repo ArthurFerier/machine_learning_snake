@@ -22,7 +22,7 @@ pygame.init()
 path = "interesting_snakes/best_snake_score_50.npz"
 brain = MLNeuralNetwork(path)
 #print(brain)
-a = SnakeGame(path, 0, [6, 6], 0, 0, 100000, 10000, 1, True, 2, 25, False, 1).play
+a = SnakeGame(path, 0, [6, 6], 0, 0, 100000, 10000, 1, True, 3, 25, False, 1).play
 
 
 pygame.quit()
