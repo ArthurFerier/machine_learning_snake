@@ -87,7 +87,6 @@ class Snake(object):
         self.growth_pending = 0  # Number of segments still to grow.
         self.direction = DIRECTION_UP  # Current movement direction.
         self.segments = deque([start - self.direction * i for i in range(start_length)])
-        # juste une liste de tuple contenant les coordonnées des blocks du snake [(xhead, yhead), (xsec, ysec),...]
         if type(pot_parents) == str and loaded:
             self.brain = MLNeuralNetwork(pot_parents)
             self.brain.mutate(proportion, amplitude)
@@ -115,15 +114,13 @@ class Snake(object):
         """Return the position of the snake's head."""
         return self.segments[0]
 
-    def update(self, dt, direction):  # dans cette fonction que je dois faire le brain
+    def update(self, dt, direction):
         """Update the snake by dt seconds and possibly set direction."""
         self.timer -= dt
         if self.timer > 0:
             # Nothing to do yet.
             return
 
-        # if self.direction != -direction:
-        # self.direction = direction
 
         if self.direction == DIRECTION_UP:
             if direction == "middle":
@@ -182,7 +179,7 @@ class Snake(object):
 class SnakeGame(object):
     def __init__(self, parents, scores_p, structure,
                  proportion, amplitude, moves, add_moves,
-                 generation, screen, speed, size, loaded, n_batch, n_eval=1):
+                 generation, screen, speed, size, loaded, n_batch, sonar, visualising_sonar, n_eval=1):
         pygame.display.set_caption('PyGame Snake')
         self.block_size = BLOCK_SIZE
         self.see = screen
@@ -211,6 +208,8 @@ class SnakeGame(object):
         self.structure = structure
         self.save_moves = moves
         self.n_eval = n_eval
+        self.visualising_sonar = visualising_sonar
+        self.use_sonar = sonar
 
 
     def reset(self, parents, scores_p, proportion, amplitude, batch, speed, loaded, structure, same=True):
@@ -245,7 +244,7 @@ class SnakeGame(object):
                     and food[1] != 0 \
                     and food[1] != self.size - 1:
                 self.food.add(food)
-                break  # comme ça il en crée pas plusieurs ce con
+                break
 
     def input(self, e):
         """Process keyboard event e."""
@@ -298,23 +297,11 @@ class SnakeGame(object):
         """Draw game (while playing)."""
         self.screen.fill(BACKGROUND_COLOR)
 
-        switch = True
-        first = True
         snake_length = len(self.snake)
         for p in self.snake:
             pygame.draw.rect(self.screen, SNAKE_COLOR3, self.block(p))
             SNAKE_COLOR3[0] -= int(255/snake_length)
-            """
-            if first:
-                pygame.draw.rect(self.screen, SNAKE_COLOR3, self.block(p))
-                first = False
-            else:
-                if switch:
-                    pygame.draw.rect(self.screen, SNAKE_COLOR, self.block(p))
-                    switch = False
-                else:
-                    pygame.draw.rect(self.screen, SNAKE_COLOR2, self.block(p))
-                    switch = True"""
+
         SNAKE_COLOR3[0] = 255
 
         for f in self.food:
@@ -328,25 +315,12 @@ class SnakeGame(object):
         """Draw game (while playing)."""
         self.screen.fill(BACKGROUND_COLOR)
 
-        switch = True
-        first = True
-        # we do arrive in the drawing sonar but nothin happens
         snake_length = len(self.snake)
         # i can print this rectangle
         for p in self.snake:
             pygame.draw.rect(self.screen, SNAKE_COLOR3, self.block(p))
             SNAKE_COLOR3[0] -= int(255/snake_length)
-            """
-            if first:
-                pygame.draw.rect(self.screen, SNAKE_COLOR3, self.block(p))
-                first = False
-            else:
-                if switch:
-                    pygame.draw.rect(self.screen, SNAKE_COLOR, self.block(p))
-                    switch = False
-                else:
-                    pygame.draw.rect(self.screen, SNAKE_COLOR2, self.block(p))
-                    switch = True"""
+
         SNAKE_COLOR3[0] = 255
 
         for f in self.food:
@@ -358,9 +332,8 @@ class SnakeGame(object):
 
         # drawing the fun part
 
-        # nothing is drawed below here ......
         # array of the brightness of the yellow
-        n_brightnesses = int((len(cubes_diff_light)+1)/2) # ex = len 5 => 3 differents brightnesses
+        n_brightnesses = int((len(cubes_diff_light)+1)/2)
         adding_brightness = int(180 / n_brightnesses)
         brightnesses = np.empty(len(cubes_diff_light))
         for i in range(n_brightnesses):
@@ -371,14 +344,11 @@ class SnakeGame(object):
         # funzzz
         for i in range(len(cubes_diff_light)):
             for blocks in cubes_diff_light[i]:
-                # p serait des coordonnées => oui : blocks = (x, y)
                 pygame.draw.rect(self.screen, (int(brightnesses[i]), int(brightnesses[i]), 0),
                                  Rect((blocks[0]*self.block_size, blocks[1]*self.block_size),
                                        DIRECTION_DR * self.block_size))
 
         pygame.display.flip()
-
-
 
 
     def draw_death(self):
@@ -388,8 +358,7 @@ class SnakeGame(object):
         self.draw_text("Your score is: {}".format(self.score), (140, 180))
 
 
-
-    def part_right(self, x, y): # are the coord (x,y) at the right of the head ?
+    def part_right(self, x, y):
         x_head = self.snake.segments[0][0]
         y_head = self.snake.segments[0][1]
         if self.snake.direction == DIRECTION_UP:
@@ -412,11 +381,9 @@ class SnakeGame(object):
                 return True
             else:
                 return False
-        else:
-            print("mon part right fonctionne pas")
-            return -1
 
-    def part_left(self, x, y): # are the coord (x,y) at the left of the head ?
+
+    def part_left(self, x, y):
         x_head = self.snake.segments[0][0]
         y_head = self.snake.segments[0][1]
         if self.snake.direction == DIRECTION_UP:
@@ -439,9 +406,7 @@ class SnakeGame(object):
                 return True
             else:
                 return False
-        else:
-            print("mon part left fonctionne pas")
-            return -1
+
 
     def part_above(self, x, y):
         x_head = self.snake.segments[0][0]
@@ -466,9 +431,7 @@ class SnakeGame(object):
                 return True
             else:
                 return False
-        else:
-            print("mon part above fonctionne pas")
-            return -1
+
 
     def part_above_right(self, x, y):
         x_head = self.snake.segments[0][0]
@@ -493,9 +456,7 @@ class SnakeGame(object):
                 return True
             else:
                 return False
-        else:
-            print("mon part above right fonctionne pas")
-            return -1
+
 
     def part_above_left(self, x, y):
         x_head = self.snake.segments[0][0]
@@ -520,9 +481,7 @@ class SnakeGame(object):
                 return True
             else:
                 return False
-        else:
-            print("mon part above fonctionne pas")
-            return -1
+
 
     def only3face(self):
         block_meeting_cond = False
@@ -533,7 +492,7 @@ class SnakeGame(object):
             # if block left
             if self.part_left(part[0], part[1]):
                 return False
-            # si le block_meeting_cond est déjà true, ça sert à rien à refaire
+
             if not block_meeting_cond:
                 if self.part_above(part[0], part[1]):
                     block_meeting_cond = True
@@ -541,6 +500,7 @@ class SnakeGame(object):
                     block_meeting_cond = True
                 if self.part_above_left(part[0], part[1]):
                     block_meeting_cond = True
+        # todo : need to replace things here to redo the training correctly
         # wall can count for block_meeting_cond too
         # right wall, but we cannot go along it :
         if self.snake.segments[0][0] == self.size - 1 \
@@ -575,7 +535,7 @@ class SnakeGame(object):
             # if block above
             if self.part_above(part[0], part[1]):
                 return False
-            # si le block_meeting_cond est déjà true, ça sert à rien à refaire
+            # if block meeting cond is already true, no need to re-calculate every thing
             if not block_meeting_cond:
                 if self.part_above_right(part[0], part[1]):
                     block_meeting_cond = True
@@ -590,7 +550,7 @@ class SnakeGame(object):
                 return False
             if self.part_above(part[0], part[1]):
                 return False
-            # si le block_meeting_cond est déjà true, ça sert à rien à refaire
+            # if block meeting cond is already true, no need to re-calculate every thing
             if not block_meeting_cond:
                 if self.part_above_left(part[0], part[1]):
                     block_meeting_cond = True
@@ -641,14 +601,14 @@ class SnakeGame(object):
 
         return 1 + count_above + count_down + count_left + count_right
 
-    def make_0_from_0(self, zeros):
+    def make_0_from_0(self, zeros): # returns all the zeros that are not already colored
         new_zeros = []
         global free_block_above
         global free_block_left
         global free_block_right
-        matrixes = [free_block_above, free_block_left, free_block_right]
+        matrices = [free_block_above, free_block_left, free_block_right]
 
-        for matrix in matrixes:
+        for matrix in matrices:
             for coord in zeros:
                 # above
                 if matrix[coord[1]][coord[0]+1] == 1:
@@ -710,7 +670,6 @@ class SnakeGame(object):
         # action[0] = 1 : next left
         # action[1] = 1 : next middle
         # action[2] = 1 : next right
-        action = [0, 0, 0]
 
         # determining the blocs left, above and right of the head
         x_right = 0
@@ -761,8 +720,6 @@ class SnakeGame(object):
         # setting the snake blocks
         for part in self.snake.segments:
             free_block_right[part[1]+1][part[0]+1] = False
-        #don't care about the last segment
-        #free_block_right[self.snake.segments[-1][1]+1][self.snake.segments[-1][0]+1] = True
         global free_block_above
         free_block_above = np.copy(free_block_right)
         global free_block_left
@@ -787,7 +744,8 @@ class SnakeGame(object):
         count_right = self.breadth_countR(x_right, y_right)
 
         # visualising the breadth first count
-        self.sonar()
+        if self.visualising_sonar:
+            self.sonar()
 
         return [count_left, count_above, count_right]
 
@@ -805,7 +763,7 @@ class SnakeGame(object):
                 dt = self.clock.tick(FPS) / 1000.0
                 dt = 0.016
                 just_choosed_direction = False
-            else :
+            else:
                 dt = self.clock.tick(FPS) / 1000.0  # convert to seconds => number of seconds since last clocktick
 
             for e in pygame.event.get():
@@ -839,7 +797,10 @@ class SnakeGame(object):
                 if tik < 0:
                     tik += 1 / self.snake.speed
                     self.moves -= 1
-
+                    # initiating
+                    cos_food = 0
+                    direction = 0
+                    walls = 0
                     # determining the cosinus of the angle between the food and the head
                     hyp = ((self.snake.segments[0][0] - food[0]) ** 2 +
                            (self.snake.segments[0][1] - food[1]) ** 2) ** (1 / 2)
@@ -977,83 +938,88 @@ class SnakeGame(object):
                             walls = walls[3:]
 
 
-                    if self.only3face():
-                        # print("on est dans la cond 3 en face")
-                        actions = self.choose_direction()
-                        just_choosed_direction = True
+                    if self.use_sonar:
+                        if self.only3face():
+                            # print("on est dans la cond 3 en face")
+                            actions = self.choose_direction()
+                            just_choosed_direction = True
 
-                        # let the brain choose if equality
-                        # count left & above same and bigger than right
-                        if actions[0] == actions[1] and actions[0] > actions[2]:
-                            print("the brain is choosing")
+                            # let the brain choose if equality
+                            # count left & above same and bigger than right
+                            if actions[0] == actions[1] and actions[0] > actions[2]:
+                                print("the brain is choosing")
+                                obs = np.concatenate(([cos_food], [direction], walls))
+                                actions = self.snake.brain.think(obs)
+
+                            # count left & right same and bigger than count above
+                            if actions[0] == actions[2] and actions[0] > actions[1]:
+                                # todo : changer cette cond si on réentraine le snake
+                                print("tourne à droite sinon t'es foutu")
+                                actions = [0, 0, 1]
+
+                            # count right & above same and bigger than left
+                            if actions[1] == actions[2] and actions[1] > actions[0]:
+                                print("the brain is choosing")
+                                obs = np.concatenate(([cos_food], [direction], walls))
+                                actions = self.snake.brain.think(obs)
+                        elif self.upRnoR(): # no block up too
+                            # print("on est dans la cond un en haut à droite")
+                            actions = self.choose_direction()
+                            just_choosed_direction = True
+
+                            # let the brain choose if equality
+                            # count left & above same and bigger than right
+                            if actions[0] == actions[1] and actions[0] > actions[2]:
+                                # print("the brain is choosing")
+                                obs = np.concatenate(([cos_food], [direction], walls))
+                                actions = self.snake.brain.think(obs)
+
+                            # count left & right same and bigger than count above
+                            if actions[0] == actions[2] and actions[0] > actions[1]:
+                                # print("the brain is choosing")
+                                obs = np.concatenate(([cos_food], [direction], walls))
+                                actions = self.snake.brain.think(obs)
+
+                            # count right & above same and bigger than left
+                            if actions[1] == actions[2] and actions[1] > actions[0]:
+                                # print("the brain is choosing")
+                                obs = np.concatenate(([cos_food], [direction], walls))
+                                actions = self.snake.brain.think(obs)
+                        elif self.upLnoL(): # no block up too
+                            # print("on est dans la cond un en haut à gauche")
+                            actions = self.choose_direction()
+                            just_choosed_direction = True
+
+                            # let the brain choose if equality
+                            # count left & above same and bigger than right
+                            if actions[0] == actions[1] and actions[0] > actions[2]:
+                                # print("the brain is choosing")
+                                obs = np.concatenate(([cos_food], [direction], walls))
+                                actions = self.snake.brain.think(obs)
+
+                            # count left & right same and bigger than count above
+                            if actions[0] == actions[2] and actions[0] > actions[1]:
+                                # print("the brain is choosing")
+                                obs = np.concatenate(([cos_food], [direction], walls))
+                                actions = self.snake.brain.think(obs)
+
+                            # count right & above same and bigger than left
+                            if actions[1] == actions[2] and actions[1] > actions[0]:
+                                # print("the brain is choosing")
+                                obs = np.concatenate(([cos_food], [direction], walls))
+                                actions = self.snake.brain.think(obs)
+                        else: # il n'y a pas de danger de se faire enrouler
                             obs = np.concatenate(([cos_food], [direction], walls))
                             actions = self.snake.brain.think(obs)
 
-                        # count left & right same and bigger than count above
-                        if actions[0] == actions[2] and actions[0] > actions[1]:
-                            # todo : changer cette cond si on réentraine le snake
-                            print("tourne à droite sinon t'es foutu")
-                            actions = [0, 0, 1]
 
-                        # count right & above same and bigger than left
-                        if actions[1] == actions[2] and actions[1] > actions[0]:
-                            print("the brain is choosing")
-                            obs = np.concatenate(([cos_food], [direction], walls))
-                            actions = self.snake.brain.think(obs)
-
-                    elif self.upRnoR(): # no block up too
-                        # print("on est dans la cond un en haut à droite")
-                        actions = self.choose_direction()
-                        just_choosed_direction = True
-
-                        # let the brain choose if equality
-                        # count left & above same and bigger than right
-                        if actions[0] == actions[1] and actions[0] > actions[2]:
-                            # print("the brain is choosing")
-                            obs = np.concatenate(([cos_food], [direction], walls))
-                            actions = self.snake.brain.think(obs)
-
-                        # count left & right same and bigger than count above
-                        if actions[0] == actions[2] and actions[0] > actions[1]:
-                            # print("the brain is choosing")
-                            obs = np.concatenate(([cos_food], [direction], walls))
-                            actions = self.snake.brain.think(obs)
-
-                        # count right & above same and bigger than left
-                        if actions[1] == actions[2] and actions[1] > actions[0]:
-                            # print("the brain is choosing")
-                            obs = np.concatenate(([cos_food], [direction], walls))
-                            actions = self.snake.brain.think(obs)
-                    elif self.upLnoL(): # no block up too
-                        # print("on est dans la cond un en haut à gauche")
-                        actions = self.choose_direction()
-                        just_choosed_direction = True
-
-                        # let the brain choose if equality
-                        # count left & above same and bigger than right
-                        if actions[0] == actions[1] and actions[0] > actions[2]:
-                            # print("the brain is choosing")
-                            obs = np.concatenate(([cos_food], [direction], walls))
-                            actions = self.snake.brain.think(obs)
-
-                        # count left & right same and bigger than count above
-                        if actions[0] == actions[2] and actions[0] > actions[1]:
-                            # print("the brain is choosing")
-                            obs = np.concatenate(([cos_food], [direction], walls))
-                            actions = self.snake.brain.think(obs)
-
-                        # count right & above same and bigger than left
-                        if actions[1] == actions[2] and actions[1] > actions[0]:
-                            # print("the brain is choosing")
-                            obs = np.concatenate(([cos_food], [direction], walls))
-                            actions = self.snake.brain.think(obs)
-                    else: # il n'y a pas de danger de se faire enrouler
+                        actions = choice(actions)
+                        self.brain_action(actions)
+                    else:
                         obs = np.concatenate(([cos_food], [direction], walls))
                         actions = self.snake.brain.think(obs)
-
-
-                    actions = choice(actions)
-                    self.brain_action(actions)
+                        actions = choice(actions)
+                        self.brain_action(actions)
 
                 if self.see:
                     self.draw(eval=eval)
