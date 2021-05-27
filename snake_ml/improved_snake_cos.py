@@ -947,19 +947,16 @@ class SnakeGame(object):
                             # let the brain choose if equality
                             # count left & above same and bigger than right
                             if actions[0] == actions[1] and actions[0] > actions[2]:
-                                print("the brain is choosing")
                                 obs = np.concatenate(([cos_food], [direction], walls))
                                 actions = self.snake.brain.think(obs)
 
                             # count left & right same and bigger than count above
                             if actions[0] == actions[2] and actions[0] > actions[1]:
                                 # todo : changer cette cond si on réentraine le snake
-                                print("tourne à droite sinon t'es foutu")
                                 actions = [0, 0, 1]
 
                             # count right & above same and bigger than left
                             if actions[1] == actions[2] and actions[1] > actions[0]:
-                                print("the brain is choosing")
                                 obs = np.concatenate(([cos_food], [direction], walls))
                                 actions = self.snake.brain.think(obs)
                         elif self.upRnoR(): # no block up too
@@ -1024,6 +1021,7 @@ class SnakeGame(object):
                 if self.see:
                     self.draw(eval=eval)
             else:
+                print(self.score)
                 self.snake.brain.score += self.score
                 self.brains[self.batch] = self.snake.brain
 

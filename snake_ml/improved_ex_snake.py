@@ -12,6 +12,8 @@ import os.path
 # what I have to change possibly :
 # test one snake on more than one game (can be bad luck for the snake else)
 
+# setting a sonar to help the snake choose right or left in case of choice
+sonar = True
 
 n_generations = 10              # number of generations
 n_batch = 100                  # number of snakes in a batch
@@ -28,6 +30,7 @@ init_moves = 100                # number of moves the snake can do, can increase
 add_moves = 100                 # number of moves added when the snake eats food
 
 screen = True                   # see the screen or not
+visualising_sonar = False       # visualise the sonar or not, only possible if screen = True
 speed = 400000                       # speed in squares/s of the snake
 size = 17                      # size of the world
 
@@ -59,7 +62,7 @@ for i in range(n_generations):
                          proportion, standard_dev,
                          init_moves, add_moves, i,
                          screen, speed, size, loaded,
-                         n_batch, n_eval).play
+                         n_batch, n_eval, sonar, visualising_sonar).play
     pygame.quit()
 
     loaded = False
