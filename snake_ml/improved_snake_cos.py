@@ -807,19 +807,15 @@ class SnakeGame(object):
 
         # right wall
         if x_head == self.size - 1 and self.snake.direction == DIRECTION_UP:
-            print("right wall check")
             return True
         # left wall
         if x_head == 0 and self.snake.direction == DIRECTION_DOWN:
-            print("left wall check")
             return True
         # up wall
         if y_head == 0 and self.snake.direction == DIRECTION_LEFT:
-            print("up wall check")
             return True
         # under wall
-        if y_head == self.size - 1 and self.snake.direction == DIRECTION_DOWN:
-            print("down wall check")
+        if y_head == self.size - 1 and self.snake.direction == DIRECTION_RIGHT:
             return True
         return False
 
@@ -833,45 +829,49 @@ class SnakeGame(object):
         if x_head == 0 and y_head != self.size - 1 \
                 and self.snake.direction == DIRECTION_DOWN\
                 and y_head != 1:
-            print(y_head)
+            print("still hasn't reached the end of the wall : left")
             return [0, 1, 0]
         # right wall
         if x_head == self.size - 1 and y_head != 0 \
                 and self.snake.direction == DIRECTION_UP\
                 and y_head != self.size - 2:
-            print(y_head)
+            print("still hasn't reached the end of the wall : right")
             return [0, 1, 0]
         # above wall
         if y_head == 0 and x_head != 0 \
                 and self.snake.direction == DIRECTION_LEFT\
                 and x_head != self.size - 2:
-            print(x_head)
+            print("still hasn't reached the end of the wall : above")
             return [0, 1, 0]
         # under wall
         if y_head == self.size - 1 and x_head != self.size - 1 \
                 and self.snake.direction == DIRECTION_RIGHT\
                 and x_head != 1:
-            print(x_head)
+            print("still hasn't reached the end of the wall : under")
             return [0, 1, 0]
 
         # has reached the end of the wall
-        print("has reached the end of the wall")
+
         if (x_head == 0 or x_head == self.size-1) and (y_head == 0 or y_head == self.size - 1):
+            print("reached the end of the first wall")
             return [1, 0, 0]
 
         # need to turn a second time
-        print("need to turn a second time")
         # right wall
         if self.snake.direction == DIRECTION_LEFT and x_head == self.size - 2 and y_head == 0:
+            print("turned a second time : right wall")
             return [1, 0, 0]
         # left wall
         if self.snake.direction == DIRECTION_RIGHT and x_head == 1 and y_head == self.size - 1:
+            print("turned a second time : left wall")
             return [1, 0, 0]
         # above wall
         if self.snake.direction == DIRECTION_DOWN and x_head == 0 and y_head == 1:
+            print("turned a second time : above wall")
             return [1, 0, 0]
         # down wall
         if self.snake.direction == DIRECTION_UP and x_head == self.size - 1 and y_head == self.size - 2:
+            print("turned a second time : down wall")
             return [1, 0, 0]
 
 
@@ -880,21 +880,24 @@ class SnakeGame(object):
         for part in self.snake.segments:
             if self.part_above(part[0], part[1]):
                 de_infinite = False
+                print("part just in front")
                 return [0, 0, 1]
         # food
         food_x = food[0]
         food_y = food[1]
-        print(food_y)
         # right/left wall
         if (x_head == 1 or x_head == self.size - 2) and (y_head == food_y):
+            print("no more in infinite wall")
             de_infinite = False
             return [0, 0, 1]
         # above/under wall
         if (y_head == 1 or y_head == self.size - 2) and (x_head == food_x):
+            print("no more in infinite wall")
             de_infinite = False
             return [0, 0, 1]
 
         # still going counterflow of the wall
+        print("still going counterflow")
         return [0, 1, 0]
 
 
@@ -1007,7 +1010,6 @@ class SnakeGame(object):
                             cos_food = -adj / hyp
                         else:
                             cos_food = adj / hyp
-                    # print(cos_food)
                     # determining if there are body parts next to the head
                     batch_count = 0  # the 3 first blocks doesn't matter
                     ur = 0
@@ -1093,7 +1095,6 @@ class SnakeGame(object):
                             actions = self.process_infinite_wall()
                         else:
                             if self.only3face():
-                                # print("on est dans la cond 3 en face")
                                 actions = self.choose_direction()
                                 just_choosed_direction = True
 
