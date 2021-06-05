@@ -72,6 +72,7 @@ KEY_DIRECTION = {
 }
 
 time_passes = True
+de_infinite = False
 tik = 1
 free_block_above = []
 free_block_left = []
@@ -482,6 +483,57 @@ class SnakeGame(object):
             else:
                 return False
 
+    def wall_right(self):
+        if self.snake.direction == DIRECTION_RIGHT:
+            if self.snake.segments[0][1] == self.size - 1:
+                return True
+            return False
+        if self.snake.direction == DIRECTION_LEFT:
+            if self.snake.segments[0][1] == 0:
+                return True
+            return False
+        if self.snake.direction == DIRECTION_UP:
+            if self.snake.segments[0][0] == self.size - 1:
+                return True
+            return False
+        if self.snake.direction == DIRECTION_DOWN:
+            if self.snake.segments[0][0] == 0:
+                return True
+            return False
+
+    def wall_left(self):
+        if self.snake.direction == DIRECTION_LEFT:
+            if self.snake.segments[0][1] == self.size - 1:
+                return True
+            return False
+        if self.snake.direction == DIRECTION_RIGHT:
+            if self.snake.segments[0][1] == 0:
+                return True
+            return False
+        if self.snake.direction == DIRECTION_DOWN:
+            if self.snake.segments[0][0] == self.size - 1:
+                return True
+            return False
+        if self.snake.direction == DIRECTION_UP:
+            if self.snake.segments[0][0] == 0:
+                return True
+            return False
+
+
+    def rightLeft(self):
+        block_meeting_right = False
+        block_meeting_left = False
+        for part in self.snake.segments:
+            # if block right
+            if self.part_right(part[0], part[1]) or self.wall_right() and not block_meeting_right:
+                block_meeting_right = True
+            # if block left
+            if self.part_left(part[0], part[1]) or self.wall_left() and not block_meeting_left:
+                block_meeting_left = True
+
+        return block_meeting_right and block_meeting_left
+
+
 
     def only3face(self):
         block_meeting_cond = False
@@ -749,6 +801,102 @@ class SnakeGame(object):
 
         return [count_left, count_above, count_right]
 
+    def infinite_wall(self):
+        x_head = self.snake.segments[0][0]
+        y_head = self.snake.segments[0][1]
+
+        # right wall
+        if x_head == self.size - 1 and self.snake.direction == DIRECTION_UP:
+            print("right wall check")
+            return True
+        # left wall
+        if x_head == 0 and self.snake.direction == DIRECTION_DOWN:
+            print("left wall check")
+            return True
+        # up wall
+        if y_head == 0 and self.snake.direction == DIRECTION_LEFT:
+            print("up wall check")
+            return True
+        # under wall
+        if y_head == self.size - 1 and self.snake.direction == DIRECTION_DOWN:
+            print("down wall check")
+            return True
+        return False
+
+    def process_infinite_wall(self):
+        global de_infinite
+        x_head = self.snake.segments[0][0]
+        y_head = self.snake.segments[0][1]
+
+        # still hasn't reached the end of the wall and no obstacle
+        # left wall
+        if x_head == 0 and y_head != self.size - 1 \
+                and self.snake.direction == DIRECTION_DOWN\
+                and y_head != 1:
+            print(y_head)
+            return [0, 1, 0]
+        # right wall
+        if x_head == self.size - 1 and y_head != 0 \
+                and self.snake.direction == DIRECTION_UP\
+                and y_head != self.size - 2:
+            print(y_head)
+            return [0, 1, 0]
+        # above wall
+        if y_head == 0 and x_head != 0 \
+                and self.snake.direction == DIRECTION_LEFT\
+                and x_head != self.size - 2:
+            print(x_head)
+            return [0, 1, 0]
+        # under wall
+        if y_head == self.size - 1 and x_head != self.size - 1 \
+                and self.snake.direction == DIRECTION_RIGHT\
+                and x_head != 1:
+            print(x_head)
+            return [0, 1, 0]
+
+        # has reached the end of the wall
+        print("has reached the end of the wall")
+        if (x_head == 0 or x_head == self.size-1) and (y_head == 0 or y_head == self.size - 1):
+            return [1, 0, 0]
+
+        # need to turn a second time
+        print("need to turn a second time")
+        # right wall
+        if self.snake.direction == DIRECTION_LEFT and x_head == self.size - 2 and y_head == 0:
+            return [1, 0, 0]
+        # left wall
+        if self.snake.direction == DIRECTION_RIGHT and x_head == 1 and y_head == self.size - 1:
+            return [1, 0, 0]
+        # above wall
+        if self.snake.direction == DIRECTION_DOWN and x_head == 0 and y_head == 1:
+            return [1, 0, 0]
+        # down wall
+        if self.snake.direction == DIRECTION_UP and x_head == self.size - 1 and y_head == self.size - 2:
+            return [1, 0, 0]
+
+
+        # if no block just in front or food exactly right
+        # block
+        for part in self.snake.segments:
+            if self.part_above(part[0], part[1]):
+                de_infinite = False
+                return [0, 0, 1]
+        # food
+        food_x = food[0]
+        food_y = food[1]
+        print(food_y)
+        # right/left wall
+        if (x_head == 1 or x_head == self.size - 2) and (y_head == food_y):
+            de_infinite = False
+            return [0, 0, 1]
+        # above/under wall
+        if (y_head == 1 or y_head == self.size - 2) and (x_head == food_x):
+            de_infinite = False
+            return [0, 0, 1]
+
+        # still going counterflow of the wall
+        return [0, 1, 0]
+
 
     @property
     def play(self):
@@ -939,79 +1087,87 @@ class SnakeGame(object):
 
 
                     if self.use_sonar:
-                        if self.only3face():
-                            # print("on est dans la cond 3 en face")
-                            actions = self.choose_direction()
-                            just_choosed_direction = True
+                        global de_infinite
+                        if self.infinite_wall() or de_infinite:
+                            de_infinite = True
+                            actions = self.process_infinite_wall()
+                        else:
+                            if self.only3face():
+                                # print("on est dans la cond 3 en face")
+                                actions = self.choose_direction()
+                                just_choosed_direction = True
 
-                            # let the brain choose if equality
-                            # count left & above same and bigger than right
-                            if actions[0] == actions[1] and actions[0] > actions[2]:
-                                obs = np.concatenate(([cos_food], [direction], walls))
-                                actions = self.snake.brain.think(obs)
+                                # let the brain choose if equality
+                                # count left & above same and bigger than right
+                                if actions[0] == actions[1] and actions[0] > actions[2]:
+                                    obs = np.concatenate(([cos_food], [direction], walls))
+                                    actions = self.snake.brain.think(obs)
 
-                            # count left & right same and bigger than count above
-                            if actions[0] == actions[2] and actions[0] > actions[1]:
-                                # todo : changer cette cond si on réentraine le snake
-                                actions = [0, 0, 1]
+                                # count left & right same and bigger than count above
+                                if actions[0] == actions[2] and actions[0] > actions[1]:
+                                    # todo : changer cette cond si on réentraine le snake
+                                    actions = [0, 0, 1]
 
-                            # count right & above same and bigger than left
-                            if actions[1] == actions[2] and actions[1] > actions[0]:
-                                obs = np.concatenate(([cos_food], [direction], walls))
-                                actions = self.snake.brain.think(obs)
-                        elif self.upRnoR(): # no block up too
-                            # print("on est dans la cond un en haut à droite")
-                            actions = self.choose_direction()
-                            just_choosed_direction = True
+                                # count right & above same and bigger than left
+                                if actions[1] == actions[2] and actions[1] > actions[0]:
+                                    obs = np.concatenate(([cos_food], [direction], walls))
+                                    actions = self.snake.brain.think(obs)
+                            elif self.upRnoR():  # no block up too
+                                # print("on est dans la cond un en haut à droite")
+                                actions = self.choose_direction()
+                                just_choosed_direction = True
 
-                            # let the brain choose if equality
-                            # count left & above same and bigger than right
-                            if actions[0] == actions[1] and actions[0] > actions[2]:
-                                # print("the brain is choosing")
-                                obs = np.concatenate(([cos_food], [direction], walls))
-                                actions = self.snake.brain.think(obs)
+                                # let the brain choose if equality
+                                # count left & above same and bigger than right
+                                if actions[0] == actions[1] and actions[0] > actions[2]:
+                                    # print("the brain is choosing")
+                                    obs = np.concatenate(([cos_food], [direction], walls))
+                                    actions = self.snake.brain.think(obs)
 
-                            # count left & right same and bigger than count above
-                            if actions[0] == actions[2] and actions[0] > actions[1]:
-                                # print("the brain is choosing")
-                                obs = np.concatenate(([cos_food], [direction], walls))
-                                actions = self.snake.brain.think(obs)
+                                # count left & right same and bigger than count above
+                                if actions[0] == actions[2] and actions[0] > actions[1]:
+                                    # print("the brain is choosing")
+                                    obs = np.concatenate(([cos_food], [direction], walls))
+                                    actions = self.snake.brain.think(obs)
 
-                            # count right & above same and bigger than left
-                            if actions[1] == actions[2] and actions[1] > actions[0]:
-                                # print("the brain is choosing")
-                                obs = np.concatenate(([cos_food], [direction], walls))
-                                actions = self.snake.brain.think(obs)
-                        elif self.upLnoL(): # no block up too
-                            # print("on est dans la cond un en haut à gauche")
-                            actions = self.choose_direction()
-                            just_choosed_direction = True
+                                # count right & above same and bigger than left
+                                if actions[1] == actions[2] and actions[1] > actions[0]:
+                                    # print("the brain is choosing")
+                                    obs = np.concatenate(([cos_food], [direction], walls))
+                                    actions = self.snake.brain.think(obs)
+                            elif self.upLnoL():  # no block up too
+                                # print("on est dans la cond un en haut à gauche")
+                                actions = self.choose_direction()
+                                just_choosed_direction = True
 
-                            # let the brain choose if equality
-                            # count left & above same and bigger than right
-                            if actions[0] == actions[1] and actions[0] > actions[2]:
-                                # print("the brain is choosing")
-                                obs = np.concatenate(([cos_food], [direction], walls))
-                                actions = self.snake.brain.think(obs)
+                                # let the brain choose if equality
+                                # count left & above same and bigger than right
+                                if actions[0] == actions[1] and actions[0] > actions[2]:
+                                    # print("the brain is choosing")
+                                    obs = np.concatenate(([cos_food], [direction], walls))
+                                    actions = self.snake.brain.think(obs)
 
-                            # count left & right same and bigger than count above
-                            if actions[0] == actions[2] and actions[0] > actions[1]:
-                                # print("the brain is choosing")
-                                obs = np.concatenate(([cos_food], [direction], walls))
-                                actions = self.snake.brain.think(obs)
+                                # count left & right same and bigger than count above
+                                if actions[0] == actions[2] and actions[0] > actions[1]:
+                                    # print("the brain is choosing")
+                                    obs = np.concatenate(([cos_food], [direction], walls))
+                                    actions = self.snake.brain.think(obs)
 
-                            # count right & above same and bigger than left
-                            if actions[1] == actions[2] and actions[1] > actions[0]:
-                                # print("the brain is choosing")
-                                obs = np.concatenate(([cos_food], [direction], walls))
-                                actions = self.snake.brain.think(obs)
-                        else: # il n'y a pas de danger de se faire enrouler
-                            obs = np.concatenate(([cos_food], [direction], walls))
-                            actions = self.snake.brain.think(obs)
-
+                                # count right & above same and bigger than left
+                                if actions[1] == actions[2] and actions[1] > actions[0]:
+                                    # print("the brain is choosing")
+                                    obs = np.concatenate(([cos_food], [direction], walls))
+                                    actions = self.snake.brain.think(obs)
+                            else:  # il n'y a pas de danger de se faire enrouler
+                                if self.rightLeft():
+                                    actions = [0, 1, 0]
+                                else:
+                                    obs = np.concatenate(([cos_food], [direction], walls))
+                                    actions = self.snake.brain.think(obs)
 
                         actions = choice(actions)
                         self.brain_action(actions)
+
                     else:
                         obs = np.concatenate(([cos_food], [direction], walls))
                         actions = self.snake.brain.think(obs)
@@ -1021,6 +1177,7 @@ class SnakeGame(object):
                 if self.see:
                     self.draw(eval=eval)
             else:
+                time.sleep(5)
                 print(self.score)
                 self.snake.brain.score += self.score
                 self.brains[self.batch] = self.snake.brain
