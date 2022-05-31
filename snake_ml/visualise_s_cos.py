@@ -22,7 +22,7 @@ pygame.init()
 path = "interesting_snakes/best_snake_score_50.npz"
 brain = MLNeuralNetwork(path)
 #print(brain)
-a = SnakeGame(path, 0, [6, 6], 0, 0, 100000, 10000, 1, True, 3, 25, False, 1, True, False, n_eval=1).play
+a = SnakeGame(path, 0, [6, 6], 0, 0, 100000, 10000, 1, True, 3, 25, False, 1, True, False, n_eval=19).play
 
 # moyenne pour le snake avec le sonar
 """
@@ -72,6 +72,32 @@ snake sans sonar
 47
 83
 ===> moyenne : 49.7
+"""
+
+"""
+snake de fin
+84
+68
+85
+78
+79
+92
+80
+72
+62
+75
+60
+92
+83
+91
+67
+99
+64
+106
+72
+62
+77
+moyenne 82.4
 """
 
 

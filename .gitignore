@@ -1,2 +1,12 @@
 *.pyc
 
+*
+
+!data_snake_ml
+!réseaux
+!snake_ml
+!snake_ml/best_of_gen
+!snake_ml/interesting_snakes
+!snake_ml/best_tries_old
+!snake_ml/reinforcement_learning
+

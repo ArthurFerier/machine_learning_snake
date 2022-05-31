@@ -653,7 +653,7 @@ class SnakeGame(object):
 
         return 1 + count_above + count_down + count_left + count_right
 
-    def make_0_from_0(self, zeros): # returns all the zeros that are not already colored
+    def make_0_from_0(self, zeros):  # returns all the zeros that are not already colored
         new_zeros = []
         global free_block_above
         global free_block_left
@@ -829,49 +829,49 @@ class SnakeGame(object):
         if x_head == 0 and y_head != self.size - 1 \
                 and self.snake.direction == DIRECTION_DOWN\
                 and y_head != 1:
-            print("still hasn't reached the end of the wall : left")
+            #print("still hasn't reached the end of the wall : left")
             return [0, 1, 0]
         # right wall
         if x_head == self.size - 1 and y_head != 0 \
                 and self.snake.direction == DIRECTION_UP\
                 and y_head != self.size - 2:
-            print("still hasn't reached the end of the wall : right")
+            #print("still hasn't reached the end of the wall : right")
             return [0, 1, 0]
         # above wall
         if y_head == 0 and x_head != 0 \
                 and self.snake.direction == DIRECTION_LEFT\
                 and x_head != self.size - 2:
-            print("still hasn't reached the end of the wall : above")
+            #print("still hasn't reached the end of the wall : above")
             return [0, 1, 0]
         # under wall
         if y_head == self.size - 1 and x_head != self.size - 1 \
                 and self.snake.direction == DIRECTION_RIGHT\
                 and x_head != 1:
-            print("still hasn't reached the end of the wall : under")
+            #print("still hasn't reached the end of the wall : under")
             return [0, 1, 0]
 
         # has reached the end of the wall
 
         if (x_head == 0 or x_head == self.size-1) and (y_head == 0 or y_head == self.size - 1):
-            print("reached the end of the first wall")
+            # print("reached the end of the first wall")
             return [1, 0, 0]
 
         # need to turn a second time
         # right wall
         if self.snake.direction == DIRECTION_LEFT and x_head == self.size - 2 and y_head == 0:
-            print("turned a second time : right wall")
+            # print("turned a second time : right wall")
             return [1, 0, 0]
         # left wall
         if self.snake.direction == DIRECTION_RIGHT and x_head == 1 and y_head == self.size - 1:
-            print("turned a second time : left wall")
+            # print("turned a second time : left wall")
             return [1, 0, 0]
         # above wall
         if self.snake.direction == DIRECTION_DOWN and x_head == 0 and y_head == 1:
-            print("turned a second time : above wall")
+            # print("turned a second time : above wall")
             return [1, 0, 0]
         # down wall
         if self.snake.direction == DIRECTION_UP and x_head == self.size - 1 and y_head == self.size - 2:
-            print("turned a second time : down wall")
+            # print("turned a second time : down wall")
             return [1, 0, 0]
 
 
@@ -880,24 +880,24 @@ class SnakeGame(object):
         for part in self.snake.segments:
             if self.part_above(part[0], part[1]):
                 de_infinite = False
-                print("part just in front")
+                #print("part just in front")
                 return [0, 0, 1]
         # food
         food_x = food[0]
         food_y = food[1]
         # right/left wall
         if (x_head == 1 or x_head == self.size - 2) and (y_head == food_y):
-            print("no more in infinite wall")
+            #print("no more in infinite wall")
             de_infinite = False
             return [0, 0, 1]
         # above/under wall
         if (y_head == 1 or y_head == self.size - 2) and (x_head == food_x):
-            print("no more in infinite wall")
+            #print("no more in infinite wall")
             de_infinite = False
             return [0, 0, 1]
 
         # still going counterflow of the wall
-        print("still going counterflow")
+        #print("still going counterflow")
         return [0, 1, 0]
 
 
@@ -969,7 +969,7 @@ class SnakeGame(object):
                         else:
                             cos_food = -adj / hyp
 
-                    elif self.snake.direction == DIRECTION_DOWN:
+                    if self.snake.direction == DIRECTION_DOWN:
                         if food[1] - self.snake.segments[0][1] > 0:
                             direction = 1
                         elif food[1] - self.snake.segments[0][1] == 0:
@@ -997,7 +997,7 @@ class SnakeGame(object):
                         else:
                             cos_food = -adj / hyp
 
-                    elif self.snake.direction == DIRECTION_LEFT:
+                    if self.snake.direction == DIRECTION_LEFT:
                         if food[0] - self.snake.segments[0][0] > 0:
                             direction = -1
                         elif food[0] - self.snake.segments[0][0] == 0:
@@ -1010,6 +1010,11 @@ class SnakeGame(object):
                             cos_food = -adj / hyp
                         else:
                             cos_food = adj / hyp
+
+
+
+
+
                     # determining if there are body parts next to the head
                     batch_count = 0  # the 3 first blocks doesn't matter
                     ur = 0
@@ -1086,6 +1091,9 @@ class SnakeGame(object):
                             # on prend pas les 3 premiers elements du walls
                             # en clair on prend que les 5 éléments devant le snake
                             walls = walls[3:]
+
+
+
 
 
                     if self.use_sonar:
@@ -1178,7 +1186,7 @@ class SnakeGame(object):
                 if self.see:
                     self.draw(eval=eval)
             else:
-                time.sleep(5)
+                #time.sleep(5)
                 print(self.score)
                 self.snake.brain.score += self.score
                 self.brains[self.batch] = self.snake.brain

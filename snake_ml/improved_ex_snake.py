@@ -13,11 +13,11 @@ import os.path
 # test one snake on more than one game (can be bad luck for the snake else)
 
 # setting a sonar to help the snake choose right or left in case of choice
-sonar = True
+sonar = False
 
 n_generations = 10              # number of generations
 n_batch = 100                  # number of snakes in a batch
-n_eval = 10                      # number of evaluations of the brain
+n_eval = 2                      # number of evaluations of the brain
 n_add_eval = 0
 bests = 1                       # number of best snakes that will be picked
 

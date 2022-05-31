@@ -107,7 +107,6 @@ class Snake(object):
         else:
             # Remove tail.
             self.segments.pop()
-        print(self.segments)
 
     def grow(self):
         """Grow snake by one segment and speed up."""
@@ -123,6 +122,11 @@ class Snake(object):
 
 class SnakeGame(object):
     def __init__(self):
+        self.food = None
+        self.snake = None
+        self.score = None
+        self.next_direction = None
+        self.playing = None
         pygame.display.set_caption('PyGame Snake')
         self.block_size = BLOCK_SIZE
         self.window = pygame.display.set_mode(WORLD_SIZE * self.block_size)
@@ -182,7 +186,7 @@ class SnakeGame(object):
 
     def draw_text(self, text, p):
         """Draw text at position p."""
-        self.screen.blit(self.font.render(text, 1, TEXT_COLOR), p)
+        self.screen.blit(self.font.render(text, True, TEXT_COLOR), p)
 
     def draw(self):
         """Draw game (while playing)."""
