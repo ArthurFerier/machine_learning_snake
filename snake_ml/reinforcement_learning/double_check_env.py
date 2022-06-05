@@ -16,4 +16,4 @@ for episode in range(episodes):
         obs, reward, done, info = env.step(random_action)
         print('reward', reward)
 
-pygame.quit()
+env.close()

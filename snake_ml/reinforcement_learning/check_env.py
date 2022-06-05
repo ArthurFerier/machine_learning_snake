@@ -5,3 +5,4 @@ from model import SnekEnv
 env = SnekEnv()
 # It will check your custom environment and output additional warnings if needed
 check_env(env)
+env.close()

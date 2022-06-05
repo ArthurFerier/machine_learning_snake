@@ -7,6 +7,9 @@ from pygame.locals import *
 import numpy as np
 
 
+SNAKE_COLOR3 = [255, 0, 100]
+
+
 class Vector(tuple):
     """A tuple that supports some vector operations.
 
@@ -232,13 +235,19 @@ class SnakeGame(object):
         self.screen.blit(self.font.render(text, True, TEXT_COLOR), p)
 
     def draw(self):
-        """Draw game (while playing)."""
         self.screen.fill(BACKGROUND_COLOR)
+
+        snake_length = len(self.snake)
         for p in self.snake:
-            pygame.draw.rect(self.screen, SNAKE_COLOR, self.block(p))
+            pygame.draw.rect(self.screen, SNAKE_COLOR3, self.block(p))
+            SNAKE_COLOR3[0] -= int(255/snake_length)
+
+        SNAKE_COLOR3[0] = 255
+
+
         for f in self.food:
             pygame.draw.rect(self.screen, FOOD_COLOR, self.block(f))
-        self.draw_text("Score: {}".format(self.score), (20, 20))
+        self.draw_text("Score: {}".format(len(self.snake)), (20, 20))
 
     def draw_death(self):
         """Draw game (after game over)."""

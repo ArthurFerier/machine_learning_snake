@@ -186,17 +186,25 @@ class SnekEnv(gym.Env):
 
     def food_eaten(self):
         if len(self.snakeGame.snake.segments) > self.previous_length:
+            self.previous_length = len(self.snakeGame.snake.segments)
             return 1
         else:
             return 0
 
 
     def define_reward(self):
+
+        # todo : define a reward for getting to the food quickly
+        #        dynamically in function of the length of the snake
+        #        the bigger the snake, the less penality for getting to the food slowly
+
+
         reward = 0
 
         coeff_dist = 5
         coeff_food_eaten = 10
         penality_died = 15
+        coeff_time_taking_food = 0.1
 
         # if snek died
         if self.done:
@@ -205,8 +213,10 @@ class SnekEnv(gym.Env):
         reward += (1/self.calculate_dist_to_food()) * coeff_dist
         reward += self.food_eaten() * coeff_food_eaten
 
-        reward = reward - self.prev_reward
+        reward = reward - self.prev_reward  # because the two above works with deltas
         self.prev_reward = reward
+
+        reward -= coeff_time_taking_food / len(self.snakeGame.snake)
 
         return reward
 
@@ -283,7 +293,7 @@ class SnekEnv(gym.Env):
 
 
     def render(self, mode='human'):
-        ...
+        time.sleep(0.1)
 
 
     def close(self):
