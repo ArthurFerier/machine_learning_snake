@@ -147,6 +147,9 @@ class SnekEnv(gym.Env):
 
 
     def makeObservation(self):
+
+        # todo : make variable if there is a path to the food left or right or above
+
         if self.done:
             return [0, 0, 0, 0, 0, 0, 1, 1]
 
@@ -193,10 +196,6 @@ class SnekEnv(gym.Env):
 
 
     def define_reward(self):
-
-        # todo : define a reward for getting to the food quickly
-        #        dynamically in function of the length of the snake
-        #        the bigger the snake, the less penality for getting to the food slowly
 
 
         reward = 0
